@@ -61,7 +61,6 @@ def deplacement_aleatoire(liste_loups):
     
         
         
-    
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((HOST, int(PORT)))
