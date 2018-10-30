@@ -1,0 +1,133 @@
+10/30/2018 09:32:38	Démarrage de l'attente de 1 connexion(s).
+10/30/2018 09:32:40	Réception de NME en cours pour le joueur 0
+10/30/2018 09:32:40	Nom du joueur #0 est MAJELOR
+10/30/2018 09:32:40	Envoi de la description de la carte au joueur 0
+10/30/2018 09:32:40	Envoi de la description de la carte au joueur 0 terminé
+10/30/2018 09:32:40	Connexion(s) effectuée(s).
+10/30/2018 09:32:40	Démarrage du tour à tour
+10/30/2018 09:32:40	Démarrage du chrono
+10/30/2018 09:32:40	Coup n°1
+			-> Tour du joueur #0
+10/30/2018 09:32:40	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:32:40	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:32:45	Les Vampires ont fait un time out
+10/30/2018 09:32:45	Coup n°2
+			-> Tour du joueur #0
+10/30/2018 09:32:45	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:32:45	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:32:50	Les Vampires ont fait un time out
+10/30/2018 09:32:50	Coup n°3
+			-> Tour du joueur #0
+10/30/2018 09:32:50	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:32:50	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:32:55	Les Vampires ont fait un time out
+10/30/2018 09:32:55	Coup n°4
+			-> Tour du joueur #0
+10/30/2018 09:32:55	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:32:55	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:00	Les Vampires ont fait un time out
+10/30/2018 09:33:00	Coup n°5
+			-> Tour du joueur #0
+10/30/2018 09:33:00	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:00	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:05	Les Vampires ont fait un time out
+10/30/2018 09:33:05	Coup n°6
+			-> Tour du joueur #0
+10/30/2018 09:33:05	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:05	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:10	Les Vampires ont fait un time out
+10/30/2018 09:33:10	Coup n°7
+			-> Tour du joueur #0
+10/30/2018 09:33:10	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:10	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:15	Les Vampires ont fait un time out
+10/30/2018 09:33:15	Coup n°8
+			-> Tour du joueur #0
+10/30/2018 09:33:15	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:15	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:20	Les Vampires ont fait un time out
+10/30/2018 09:33:20	Coup n°9
+			-> Tour du joueur #0
+10/30/2018 09:33:20	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:20	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:25	Les Vampires ont fait un time out
+10/30/2018 09:33:25	Coup n°10
+			-> Tour du joueur #0
+10/30/2018 09:33:25	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:25	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:30	Les Vampires ont fait un time out
+10/30/2018 09:33:30	Coup n°11
+			-> Tour du joueur #0
+10/30/2018 09:33:30	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:30	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:35	Les Vampires ont fait un time out
+10/30/2018 09:33:35	Coup n°12
+			-> Tour du joueur #0
+10/30/2018 09:33:35	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:35	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:40	Les Vampires ont fait un time out
+10/30/2018 09:33:40	Coup n°13
+			-> Tour du joueur #0
+10/30/2018 09:33:40	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:40	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:45	Les Vampires ont fait un time out
+10/30/2018 09:33:45	Coup n°14
+			-> Tour du joueur #0
+10/30/2018 09:33:45	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:45	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:50	Les Vampires ont fait un time out
+10/30/2018 09:33:50	Coup n°15
+			-> Tour du joueur #0
+10/30/2018 09:33:50	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:50	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:33:55	Les Vampires ont fait un time out
+10/30/2018 09:33:55	Coup n°16
+			-> Tour du joueur #0
+10/30/2018 09:33:55	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:33:55	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:34:00	Les Vampires ont fait un time out
+10/30/2018 09:34:00	Coup n°17
+			-> Tour du joueur #0
+10/30/2018 09:34:00	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:34:00	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets
+10/30/2018 09:34:05	Les Vampires ont fait un time out
+10/30/2018 09:34:05	Coup n°18
+			-> Tour du joueur #0
+10/30/2018 09:34:05	Envoi de UPD pour 0 mise(s) à jour
+		Trame de UPD: 55-50-44-00
+10/30/2018 09:34:05	Attente de la réponse du joueur
+			-> Attente des 4 premiers octets

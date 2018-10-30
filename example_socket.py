@@ -23,6 +23,8 @@ def receive_data(sock, size, fmt):
     return struct.unpack(fmt, data)
 
 
+
+#fonction qui recupere une tuple constitué de n*5 coordonnées et revoies n listes de 5 elements dans une liste
 def split_in_chunks(liste, size_chunk):
     new_liste = []
     for i in range(0, len(liste), size_chunk):
@@ -30,6 +32,7 @@ def split_in_chunks(liste, size_chunk):
     return new_liste
 
 
+#fonction qui recupere les updates et les applique sur l'ancien etat du tableau, renvoyant le nouvel etat du tableau
 def new_state(old_state, changes):
     new = old_state.copy()
     for i in range(len(changes)):
@@ -38,22 +41,22 @@ def new_state(old_state, changes):
                 new[j] = changes[i]
     return new
 
-def deplacement_aleatoire(liste_loups):
-    liste_deplacements = []
-    #new_list = []
-    for j in range(liste_loups[2]):
-        for i in range(2):
-            aleax = random.randint(-1,1)
-            aleay = random.randint(-1,1)
-            new_x = liste_loups[0] + aleax
-            new_y = liste_loups[0] + aleay
-        liste_deplacements.append([new_x, new_y, 1])
-#    for i in range(len(liste_deplacements)):
-#        for j in range(i+1, len(liste_deplacements)):
-#            if liste_deplacements[i][0] == liste_deplacements[j][0] and liste_deplacements[i][1] == liste_deplacements[j][1]:
-#                liste_deplacements[i][2] += 1
-#                new_list = new_list.append(liste_deplacements[i])
-    return liste_deplacements
+#def deplacement_aleatoire(liste_loups):
+#    liste_deplacements = []
+#    #new_list = []
+#    for j in range(liste_loups[2]):
+#        for i in range(2):
+#            aleax = random.randint(-1,1)
+#            aleay = random.randint(-1,1)
+#            new_x = liste_loups[0] + aleax
+#            new_y = liste_loups[0] + aleay
+#        liste_deplacements.append([new_x, new_y, 1])
+##    for i in range(len(liste_deplacements)):
+##        for j in range(i+1, len(liste_deplacements)):
+##            if liste_deplacements[i][0] == liste_deplacements[j][0] and liste_deplacements[i][1] == liste_deplacements[j][1]:
+##                liste_deplacements[i][2] += 1
+##                new_list = new_list.append(liste_deplacements[i])
+#    return liste_deplacements
         
         
           
@@ -101,7 +104,7 @@ else:
     map_commands_raw = receive_data(sock, number_map_commands * 5, "{}B".format(number_map_commands * 5))
     
     
-etat_initial = split_in_chunks(map_commands_raw , 5)
+etat_intermediaire = split_in_chunks(map_commands_raw , 5)
 
 
 entree = True
@@ -126,18 +129,18 @@ while entree:
         
         #obtention de l'etat intermediaire de la carte
         modifications = split_in_chunks(upd_commands_raw, 5)
-        etat_intermediaire = new_state(etat_initial, modifications)
+        etat_intermediaire = new_state(etat_intermediaire, modifications)
         
         
         #liste des loups
         liste_wolfs = []
         for i in range(len(etat_intermediaire)):
             if etat_intermediaire[i][3] != 0:
-                liste_wolfs.append[[etat_intermediaire[i][0], etat_intermediaire[i][1], etat_intermediaire[i][3]]]
+                liste_wolfs.append([etat_intermediaire[i][0], etat_intermediaire[i][1], etat_intermediaire[i][3]])
                 
-        #preparation de mouvements aleatoires
-        for i in range(liste_wolfs):
-            dep = deplacement_aleatoire(liste_wolfs[i])
+#        #preparation de mouvements aleatoires
+#        for i in range(len(liste_wolfs)):
+#            dep = deplacement_aleatoire(liste_wolfs[i])
         
         
         # MOV
