@@ -41,26 +41,12 @@ def new_state(old_state, changes):
                 new[j] = changes[i]
     return new
 
-#def deplacement_aleatoire(liste_loups):
-#    liste_deplacements = []
-#    #new_list = []
-#    for j in range(liste_loups[2]):
-#        for i in range(2):
-#            aleax = random.randint(-1,1)
-#            aleay = random.randint(-1,1)
-#            new_x = liste_loups[0] + aleax
-#            new_y = liste_loups[0] + aleay
-#        liste_deplacements.append([new_x, new_y, 1])
-##    for i in range(len(liste_deplacements)):
-##        for j in range(i+1, len(liste_deplacements)):
-##            if liste_deplacements[i][0] == liste_deplacements[j][0] and liste_deplacements[i][1] == liste_deplacements[j][1]:
-##                liste_deplacements[i][2] += 1
-##                new_list = new_list.append(liste_deplacements[i])
-#    return liste_deplacements
         
-        
-          
-            
+
+        #############################
+        ###### AI functions #########
+        #############################          
+           
     
         
         
@@ -135,16 +121,28 @@ while entree:
         #liste des loups
         liste_wolfs = []
         for i in range(len(etat_intermediaire)):
-            if etat_intermediaire[i][3] != 0:
-                liste_wolfs.append([etat_intermediaire[i][0], etat_intermediaire[i][1], etat_intermediaire[i][3]])
+            if etat_intermediaire[i][4] != 0:
+                liste_wolfs.append([etat_intermediaire[i][0], etat_intermediaire[i][1], etat_intermediaire[i][4]])
                 
-#        #preparation de mouvements aleatoires
-#        for i in range(len(liste_wolfs)):
-#            dep = deplacement_aleatoire(liste_wolfs[i])
+        liste_vampires = []
+        for i in range(len(etat_intermediaire)):
+            if etat_intermediaire[i][3] != 0:
+                liste_vampires.append([etat_intermediaire[i][0], etat_intermediaire[i][1], etat_intermediaire[i][3]])
+          
+            
+            
+         
+            
+        #############################
+        ###### AI result here #######
+        #############################
+        
+        
+        
         
         
         # MOV
-        list_movements=[]
+########## HERE RESULTS MOVES WANT""""        list_movements=
         NUMBEROFMOVESTOPERFORM = len(list_movements)
         
         sock.send("MOV".encode("ascii"))
