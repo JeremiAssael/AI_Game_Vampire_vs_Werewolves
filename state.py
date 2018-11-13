@@ -194,7 +194,7 @@ class State():
         It considers each cells where our players are and each possible combinations in available cells
         For instance if we have 3 players in an inside cell, there are 9 cells possible for these players, so
         9-1 among 9+3-1 possibilities
-        We get a list of all possibles changes"""
+        We get a list of all possibles changes, the form : [new x_cell, new y_cell, nb_vampires there]"""
         w = self.width
         h = self.height
         interm_children = []
@@ -211,14 +211,28 @@ class State():
                     interm_children.remove(interm_children[0])
                     interm_children.append(liste)
                 return interm_children[0]
+
+
+        elif player == "werewolves":
+            for cell in self.get_werewolves_list():
+                interm_children.append(moves_from_cell_players(cell[2], (cell[0], cell[1]) , w, h))
+            if len(interm_children)==1:
+                return interm_children[0]
+            else:
+                while len(interm_children)!=1:
+                    liste = [[x,y] for x in interm_children[0] for y in interm_children[1]]
+                    interm_children.remove(interm_children[0])
+                    interm_children.remove(interm_children[0])
+                    interm_children.append(liste)
+                return interm_children[0]
                 
-#"""A faire: on a obtenu les mouvements possibles par cellules. 
-#Il faut les combiner pour obtenir tous les états enfants. Ensuite, il faudra
-#écrire une fonction qui prend un état, un état enfant et renvoie une liste de mouvements pour passer
-#d'un état à l'autre"""
+#A faire: on a obtenu les mouvements possibles par cellules.
+#Il faut écrire un algo qui me permet de choisir un de ces mouvements possibles (intervention des arbres et des heuristiques)
+#Ensuite, il faut écrire une fonction qui prend un état, les mouvements choisis
+#et renvoie une liste de mouvements pour passer d'un état à l'autre, comme ils seront envoyés au serveur
          
          
-         
+#A FAIRE: CALCUL DE L'HEURISTIQUE D'UN ETAT        
     def compute_heuristic(self, player):
         """Method which take a state and return the associated heuristic"""
         if player == "vampires":
@@ -230,7 +244,7 @@ class State():
     
 #Trials
 
-test = State([[9, 0, 2, 0, 0], [4, 1, 0, 0, 4],  [2, 2, 4, 2, 0],  [9, 2, 1, 0, 0],  [4, 3, 0, 4, 0], [9, 4, 2, 0, 0]], 10, 5)  
+#test = State([[9, 0, 2, 0, 0], [4, 1, 0, 0, 4],  [2, 2, 4, 2, 0],  [9, 2, 1, 0, 0],  [4, 3, 0, 4, 0], [9, 4, 2, 0, 0]], 10, 5)  
 #print(test.get_humans_list())
 #print(test.get_nb_humans())
 #print(test.get_vampires_list())
