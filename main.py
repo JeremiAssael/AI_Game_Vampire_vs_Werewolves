@@ -5,6 +5,9 @@ import socket
 import struct
 import time
 import random
+import state as st
+from tree import Node
+from tree import Tree
 
 HOST = "localhost"
 PORT = "5555" 
@@ -21,35 +24,7 @@ def receive_data(sock, size, fmt):
     while len(data) < size:
         data += sock.recv(size - len(data))
     return struct.unpack(fmt, data)
-
-
-
-#fonction qui recupere une tuple constitué de n*5 coordonnées et revoies n listes de 5 elements dans une liste
-def split_in_chunks(liste, size_chunk):
-    new_liste = []
-    for i in range(0, len(liste), size_chunk):
-        new_liste.append(list(liste[i:i+size_chunk]))
-    return new_liste
-
-
-#fonction qui recupere les updates et les applique sur l'ancien etat du tableau, renvoyant le nouvel etat du tableau
-def new_state(old_state, changes):
-    new = old_state.copy()
-    for i in range(len(changes)):
-        for j in range(len(old_state)):
-            if changes[i][0] == old_state[j][0] and changes[i][1] == old_state[j][1]:
-                new[j] = changes[i]
-    return new
-
-        
-
-        #############################
-        ###### AI functions #########
-        #############################          
-           
-    
-        
-        
+       
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((HOST, int(PORT)))
@@ -89,8 +64,15 @@ else:
     number_map_commands = receive_data(sock,1, "1B")[0]
     map_commands_raw = receive_data(sock, number_map_commands * 5, "{}B".format(number_map_commands * 5))
     
+ 
     
-etat_intermediaire = split_in_chunks(map_commands_raw , 5)
+
+initial_state = st.State(st.split_in_chunks(map_commands_raw))  
+#l'état reçu par map est le tout premier état du systeme.
+#Il est contenu dans map_commands_raw
+
+intermediary_state = initial_state
+
 
 
 entree = True
@@ -114,28 +96,19 @@ while entree:
         
         
         #obtention de l'etat intermediaire de la carte
-        modifications = split_in_chunks(upd_commands_raw, 5)
-        etat_intermediaire = new_state(etat_intermediaire, modifications)
+        modifications = st.split_in_chunks(upd_commands_raw)
+        intermediary_state = intermediary_state.new_state(modifications)
         
         
         #liste des loups
-        liste_wolfs = []
-        for i in range(len(etat_intermediaire)):
-            if etat_intermediaire[i][4] != 0:
-                liste_wolfs.append([etat_intermediaire[i][0], etat_intermediaire[i][1], etat_intermediaire[i][4]])
-                
-        liste_vampires = []
-        for i in range(len(etat_intermediaire)):
-            if etat_intermediaire[i][3] != 0:
-                liste_vampires.append([etat_intermediaire[i][0], etat_intermediaire[i][1], etat_intermediaire[i][3]])
-          
-            
-            
+        werewolves_list = intermediary_state.get_werewolves_list()
+        
+        #liste des vampires        
+        vampires_list = intermediary_state.get_vampires_list()
+
          
             
-        #############################
-        ###### AI result here #######
-        #############################
+
         
         
         
