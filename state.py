@@ -193,8 +193,8 @@ class State():
         """Method which takes a state and return all states deriving from this one
         It considers each cells where our players are and each possible combinations in available cells
         For instance if we have 3 players in an inside cell, there are 9 cells possible for these players, so
-        9-1 among 9+3-1 possibilities"""
-        all_children = []
+        9-1 among 9+3-1 possibilities
+        We get a list of all possibles changes"""
         w = self.width
         h = self.height
         interm_children = []
@@ -202,12 +202,20 @@ class State():
         if player == "vampires":
             for cell in self.get_vampires_list():
                 interm_children.append(moves_from_cell_players(cell[2], (cell[0], cell[1]) , w, h))
-            return interm_children
+            if len(interm_children)==1:
+                return interm_children[0]
+            else:
+                while len(interm_children)!=1:
+                    liste = [[x,y] for x in interm_children[0] for y in interm_children[1]]
+                    interm_children.remove(interm_children[0])
+                    interm_children.remove(interm_children[0])
+                    interm_children.append(liste)
+                return interm_children[0]
                 
-         """A faire: on a obtenu les mouvements possibles par cellules. 
-         Il faut les combiner pour obtenir tous les états enfants. Ensuite, il faudra
-         écrire une fonction qui prend un état, un état enfant et renvoie une liste de mouvemenst pour passer
-         d'un état à l'autre"""
+#"""A faire: on a obtenu les mouvements possibles par cellules. 
+#Il faut les combiner pour obtenir tous les états enfants. Ensuite, il faudra
+#écrire une fonction qui prend un état, un état enfant et renvoie une liste de mouvements pour passer
+#d'un état à l'autre"""
          
          
          
