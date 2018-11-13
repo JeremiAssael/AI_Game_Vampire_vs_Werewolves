@@ -4,7 +4,6 @@ import argparse
 import socket
 import struct
 import time
-import random
 import state as st
 from tree import Node
 from tree import Tree
@@ -39,7 +38,7 @@ header = sock.recv(3).decode("ascii")
 if header != "SET":
     print("Protocol Error at SET")
 else:
-    (height, width )= receive_data(sock, 2, "2B")
+    (height, width)= receive_data(sock, 2, "2B")
 
 # HUM
 header = sock.recv(3).decode("ascii")
@@ -63,11 +62,11 @@ if header != "MAP":
 else:
     number_map_commands = receive_data(sock,1, "1B")[0]
     map_commands_raw = receive_data(sock, number_map_commands * 5, "{}B".format(number_map_commands * 5))
-    
+
  
     
 
-initial_state = st.State(st.split_in_chunks(map_commands_raw))  
+initial_state = st.State(st.split_in_chunks(map_commands_raw), height, width)  
 #l'état reçu par map est le tout premier état du systeme.
 #Il est contenu dans map_commands_raw
 

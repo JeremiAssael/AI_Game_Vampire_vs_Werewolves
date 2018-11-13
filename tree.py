@@ -30,40 +30,57 @@ class Tree():
             if node in nd.children:
                 return nd
         return None
+    
+#    def is_leaf(self, node):
+#        """Method stating if a node is a leaf of the tree"""
+#        if node.number_children() == 0:
+#            return True
+#        else:
+#            return False
             
     def display(self):
         """Display the tree in a pretty manner"""
         print(self.root)
         self.root.display_children()
                  
-    def max_value(self, node, alpha, beta):
-        pass
-    
-    def min_value(self, node, alpha, beta):
-        pass
-    
-    
-#    def __repr__(self):
-#        """Special method to print a tree in a pretty way"""
-#        return str(self.display())
-
+#    def max_value(self, node, alpha, beta):
+#        if self.is_leaf(node):
+#            return node.heuristic
+#        v = -10**99
+#        for cd in node.children:
+#            v = max(v, self.min_value(node, alpha, beta))
+#            if v >= beta:
+#                return v
+#            alpha = max(alpha, v)
+#        return v
+#                   
+#    def min_value(self, node, alpha, beta):
+#        if self.is_leaf(node):
+#            return node.heuristic
+#        v = +10**99
+#        for cd in node.children:
+#            v = min(v, self.max_value(node, alpha, beta))
+#            if v >= beta:
+#                return v
+#            beta = max(beta, v)
+#        return v
 
 
 #Trials
     
-root = nde.Node("root", 0.45)
-tree = Tree(root)
-c= nde.Node("c", 2.34)
-d= nde.Node("d", 56)
-e= nde.Node("e", 87)
-f= nde.Node("f", 78)
-g = nde.Node("g", 67)
-h = nde.Node("h", 698)
-tree.add_node(c, root)
-tree.add_node(d, c)
-tree.add_node(e, root)
-tree.add_node(f, e)
-tree.add_node(g, c)
-tree.add_node(h, d)
+#root = nde.Node("root", 0.45)
+#tree = Tree(root)
+#c= nde.Node("c", 2.34)
+#d= nde.Node("d", 56)
+#e= nde.Node("e", 87)
+#f= nde.Node("f", 78)
+#g = nde.Node("g", 67)
+#h = nde.Node("h", 698)
+#tree.add_node(c, root)
+#tree.add_node(d, c)
+#tree.add_node(e, root)
+#tree.add_node(f, e)
+#tree.add_node(g, c)
+#tree.add_node(h, d)
 
 
