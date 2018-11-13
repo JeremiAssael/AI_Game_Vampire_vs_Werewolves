@@ -5,6 +5,8 @@ Created on Tue Nov 13 00:35:43 2018
 @author: assae
 """
 import itertools
+import operator
+#import math
 
 def split_in_chunks(flat_state_list):
     """Method which take a tuple (a state_list) with n*5 elements and return
@@ -15,39 +17,32 @@ def split_in_chunks(flat_state_list):
         state_in_chunk.append(list(flat_state_list[i:i+5]))
     return state_in_chunk
 
+
 def flat_list(liste):
     """Method which take a list of lists and return a flat list"""
     flat = [item for sublist in liste for item in sublist]
     return flat
-#
-#def helper_enumerate(nb_players, cells_list, current_list = []):
-#    nb_cells = len(cells_list)
-#    if nb_cells == 0:
-#        return current_list
-#    elif nb_cells == 1:
-#        print("car", cells_list[0])
-#        print("cur", current_list)
-#        cells_list[0].append(nb_players)
-#        current_list.append(cells_list[0])
-#        return current_list
-#    else:
-#        for p in range(nb_players+1):
-#            print("p =", p)
-#            cells_list[-1].append(p)
-#            current_list.append(cells_list[-1])
-#            helper_enumerate(nb_players - p, cells_list[:-1], current_list)
     
 
+#def helper_enumerate(nb_players, nb_cells):
+#    """Propose a list of lists which are every manner to put nb_players players in nb_cells cells. """
+##    nb_possibilities = int(math.factorial(nb_players + nb_cells -1)/(math.factorial(nb_players) * math.factorial(nb_cells-1)))
+#    rng = list(range(nb_players + 1)) * nb_cells
+#    permutations = list(set(i for i in itertools.permutations(rng, nb_cells) if sum(i) == nb_players))
+#    return permutations
+
+
+
 def helper_enumerate(nb_players, nb_cells):
-    """Propose a list of lists which are every manner to put nb_players players in nb_cells cells. 
-    The first two indexes of a set are its identifiers (can be think as coordinates)"""
-    rng = list(range(nb_players + 1)) * nb_cells
-    permutations = list(set(i for i in itertools.permutations(rng, nb_cells) if sum(i) == nb_players))
-    perm=[]
-    for item in permutations:
-        new_item = [(i, i, item[i]) for i in range(nb_cells)]
-        perm.append(new_item)
-    return perm
+    """Propose a list of lists which are every manner to put nb_players players in nb_cells cells. """
+    def combinations_with_replacement_counts(nb_cells, nb_players):
+        size = nb_cells + nb_players - 1
+        for indices in itertools.combinations(range(size), nb_cells-1):
+            starts = [0] + [index+1 for index in indices]
+            stops = indices + (size,)
+            yield tuple(map(operator.sub, stops, starts))
+    return list(combinations_with_replacement_counts(nb_cells, nb_players))
+
 
 def allowed_moves(position, width, height):
     """A function which return all cells which can be reached from the current one, including this one"""
@@ -88,13 +83,20 @@ def allowed_moves(position, width, height):
         return moves_list
 
 
- 
+def moves_from_cell_players(nb_players, cell_position, width, height):
+    """Function which returns all possibiities to put nb_players players from the current 
+    cell in cell_position. Its a list of lists, each secondary list being a proposal.
+    Each set is (positon x, positon y, nb_players there)"""
+    moves = allowed_moves(cell_position, width, height)
+    nb_cells = len(moves)
+    possibilities = helper_enumerate(nb_players, nb_cells)
+    possible_moves =[]
+    for item in possibilities:
+        new_item = [(moves[i][0], moves[i][1], item[i]) for i in range(nb_cells)]
+        possible_moves.append(new_item)
+    return possible_moves
     
-    
-            
-
-
-
+        
 
 class State():
     """This class represents a state, as in a grid configuration.
@@ -184,46 +186,46 @@ class State():
         It considers each cells where our players are and each possible combinations in available cells
         For instance if we have 3 players in an inside cell, there are 9 cells possible for these players, so
         9-1 among 9+3-1 possibilities"""
-        all_children = []
-        w = self.width
-        h = self.height
-        
-        if player == "vampires":
-            for cell in self.get_vampires_list():
-                if cell[0] == 0 and cell[1] == 0:
-#                    4 cases
-                    pass
-                elif cell[0] == w-1 and cell[1] == 0:
-#                    4 cases
-                    pass
-                elif cell[0] == 0 and cell[1] == h-1:
-#                    4 cases
-                    pass
-                elif cell[0] == w-1 and cell[1] == h-1:
-#                    4 cases
-                    pass
-                elif cell[0] == 0 and cell[1] != 0 and cell[1] != h-1:
-#                    6 cases
-                    pass
-                elif cell[0] == w-1 and cell[1] != 0 and cell[1] != h-1:
-#                    6 cases
-                    pass
-                elif cell[0] != 0 and cell[0] != w-1 and cell[1] == 0:
-#                    6 cases   
-                    pass
-                elif cell[0] != 0 and cell[0] != w-1 and cell[1] == h-1:
-#                    6 cases
-                    pass
-                else:
-#                    9 cases
-                    pass
-                
-        elif player == "werwolves":
-            for cell in self.get_werewolves_list():
-                for i in range(cell[2]+1):
-                    pass
-        else:
-            print("vampires or werewolves must be provided as player")
+#        all_children = []
+#        w = self.width
+#        h = self.height
+#        
+#        if player == "vampires":
+#            for cell in self.get_vampires_list():
+#                if cell[0] == 0 and cell[1] == 0:
+##                    4 cases
+#                    pass
+#                elif cell[0] == w-1 and cell[1] == 0:
+##                    4 cases
+#                    pass
+#                elif cell[0] == 0 and cell[1] == h-1:
+##                    4 cases
+#                    pass
+#                elif cell[0] == w-1 and cell[1] == h-1:
+##                    4 cases
+#                    pass
+#                elif cell[0] == 0 and cell[1] != 0 and cell[1] != h-1:
+##                    6 cases
+#                    pass
+#                elif cell[0] == w-1 and cell[1] != 0 and cell[1] != h-1:
+##                    6 cases
+#                    pass
+#                elif cell[0] != 0 and cell[0] != w-1 and cell[1] == 0:
+##                    6 cases   
+#                    pass
+#                elif cell[0] != 0 and cell[0] != w-1 and cell[1] == h-1:
+##                    6 cases
+#                    pass
+#                else:
+##                    9 cases
+#                    pass
+#                
+#        elif player == "werwolves":
+#            for cell in self.get_werewolves_list():
+#                for i in range(cell[2]+1):
+#                    pass
+#        else:
+#            print("vampires or werewolves must be provided as player")
 
 
     def compute_heuristic(self, player):
