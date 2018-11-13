@@ -4,8 +4,9 @@ import argparse
 import socket
 import struct
 import time
+import random
 import state as st
-from tree import Node
+from node import Node
 from tree import Tree
 
 HOST = "localhost"
@@ -94,27 +95,27 @@ while entree:
             upd_commands_raw = receive_data(sock, number_upd_commands * 5, "{}B".format(number_upd_commands * 5))
         
         
+        
+        
         #obtention de l'etat intermediaire de la carte
         modifications = st.split_in_chunks(upd_commands_raw)
         intermediary_state = intermediary_state.new_state(modifications)
         
         
-        #liste des loups
-        werewolves_list = intermediary_state.get_werewolves_list()
-        
-        #liste des vampires        
-        vampires_list = intermediary_state.get_vampires_list()
-
-         
+        # MOV        
+        ########## HERE RESULTS MOVES WANT"""" 
+        list_movements= []
+        children = intermediary_state.get_all_children("vampires")
+        a = random.randint(0, len(children))
+        chosen_movement = children[a]
+        for i in range(len(children[a])):
+            if children[a][i][2] != 0 and children[a][i][0] != children[a][i][3] and children[a][i][1] != children[a][i][4]:
+#                Pour s'assurer qu'aucun point n'est à la fois source et target
+                list_movements.append(children[a][i])
             
+        
+       
 
-        
-        
-        
-        
-        
-        # MOV
-########## HERE RESULTS MOVES WANT""""        list_movements=
         NUMBEROFMOVESTOPERFORM = len(list_movements)
         
         sock.send("MOV".encode("ascii"))
