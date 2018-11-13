@@ -44,8 +44,14 @@ def helper_enumerate(nb_players, nb_cells):
     return list(combinations_with_replacement_counts(nb_cells, nb_players))
 
 
-def allowed_moves(position, width, height):
+def allowed_cells(nb_players, position, width, height):
     """A function which return all cells which can be reached from the current one, including this one"""
+    return [(get_current_position_surroundings(nb_players, position, width, height)[i][0], get_current_position_surroundings(nb_players, position, width, height)[i][1]) for i in range(len(get_current_position_surroundings(nb_players, position, width, height)))]
+
+
+def get_current_position_surroundings(nb_players, position, width, height):
+    """A function which return all cells which can be reached from the current one, 
+    including this one, in the current state, so with the number of players next to the coordinates"""
     x = position[0]
     y = position[1]
     h = height
@@ -55,45 +61,47 @@ def allowed_moves(position, width, height):
         print("Position error")
         return None
     elif x == 0 and y == 0:
-        moves_list.extend(((x,y), (x+1,y), (x, y+1), (x+1, y+1)))
+        moves_list.extend(((x,y, nb_players), (x+1,y, 0), (x, y+1, 0), (x+1, y+1, 0)))
         return moves_list
     elif x == w-1 and y == 0:
-        moves_list.extend((((x,y), (x-1,y), (x, y+1), (x-1, y+1))))
+        moves_list.extend((((x,y, nb_players), (x-1,y, 0), (x, y+1, 0), (x-1, y+1, 0))))
         return moves_list
     elif x == 0 and y == h-1:
-        moves_list.extend(((x,y), (x+1,y), (x, y-1), (x+1, y-1)))
+        moves_list.extend(((x,y, nb_players), (x+1,y, 0), (x, y-1, 0), (x+1, y-1, 0)))
         return moves_list
     elif x == w-1 and y == h-1:
-        moves_list.extend(((x,y), (x-1,y), (x, y-1), (x-1, y-1)))
+        moves_list.extend(((x,y, nb_players), (x-1,y, 0), (x, y-1, 0), (x-1, y-1, 0)))
         return moves_list
     elif x == 0 and y != 0 and y != h-1:
-        moves_list.extend(((x,y), (x,y+1), (x, y-1), (x+1, y), (x+1, y-1), (x+1, y+1)))
+        moves_list.extend(((x,y, nb_players), (x,y+1, 0), (x, y-1, 0), (x+1, y, 0), (x+1, y-1, 0), (x+1, y+1, 0)))
         return moves_list
     elif x == w-1 and y != 0 and y != h-1:
-        moves_list.extend(((x,y), (x,y+1), (x, y-1), (x-1, y), (x-1, y-1), (x-1, y+1)))
+        moves_list.extend(((x,y, nb_players), (x,y+1, 0), (x, y-1, 0), (x-1, y, 0), (x-1, y-1, 0), (x-1, y+1, 0)))
         return moves_list
     elif x != 0 and x != w-1 and y == 0:
-        moves_list.extend(((x,y), (x,y+1), (x+1, y), (x+1, y+1), (x-1, y), (x-1, y+1)))
+        moves_list.extend(((x,y, nb_players), (x,y+1, 0), (x+1, y, 0), (x+1, y+1, 0), (x-1, y, 0), (x-1, y+1, 0)))
         return moves_list
     elif x != 0 and x != w-1 and y == h-1:
-        moves_list.extend(((x,y), (x,y-1), (x+1, y), (x+1, y-1), (x-1, y), (x-1, y-1)))
+        moves_list.extend(((x,y, nb_players), (x,y-1, 0), (x+1, y, 0), (x+1, y-1, 0), (x-1, y, 0), (x-1, y-1, 0)))
         return moves_list
     else:
-        moves_list.extend(((x,y), (x,y-1), (x, y+1), (x+1, y), (x+1, y-1), (x+1, y+1), (x-1, y), (x-1, y-1), (x-1, y+1)))
-        return moves_list
+        moves_list.extend(((x,y, nb_players), (x,y-1, 0), (x, y+1, 0), (x+1, y, 0), (x+1, y-1, 0), (x+1, y+1, 0), (x-1, y, 0), (x-1, y-1, 0), (x-1, y+1, 0)))
+        return moves_list   
 
 
 def moves_from_cell_players(nb_players, cell_position, width, height):
     """Function which returns all possibiities to put nb_players players from the current 
     cell in cell_position. Its a list of lists, each secondary list being a proposal.
     Each set is (positon x, positon y, nb_players there)"""
-    moves = allowed_moves(cell_position, width, height)
-    nb_cells = len(moves)
+    moves = allowed_cells(nb_players, cell_position, width, height)
+    nb_cells = len(moves)    
     possibilities = helper_enumerate(nb_players, nb_cells)
     possible_moves =[]
     for item in possibilities:
         new_item = [(moves[i][0], moves[i][1], item[i]) for i in range(nb_cells)]
         possible_moves.append(new_item)
+    possible_moves.remove(get_current_position_surroundings(nb_players, cell_position, width, height))    
+    """IMPROVEMENT TO DO: FOR NOW, WE HAVE TO MOVE A MONSTER IN EACH CELL. CANNOT LET A CELL UNPLAYED IN A GAME"""
     return possible_moves
     
         
