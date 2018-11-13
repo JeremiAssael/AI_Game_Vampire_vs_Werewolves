@@ -113,10 +113,10 @@ class State():
     (position x, position y, nb_humans, nb_vampires, nb_werewolves)
     height and width are the dimensions of the grid"""
 
-    def __init__(self, state_list, height, width):
+    def __init__(self, state_list, width, height):
         self.state_list = state_list
-        self.height = height
         self. width = width
+        self.height = height
          
     def __repr__(self):
         """Special method to print a state in a pretty way"""
@@ -194,48 +194,23 @@ class State():
         It considers each cells where our players are and each possible combinations in available cells
         For instance if we have 3 players in an inside cell, there are 9 cells possible for these players, so
         9-1 among 9+3-1 possibilities"""
-#        all_children = []
-#        w = self.width
-#        h = self.height
-#        
-#        if player == "vampires":
-#            for cell in self.get_vampires_list():
-#                if cell[0] == 0 and cell[1] == 0:
-##                    4 cases
-#                    pass
-#                elif cell[0] == w-1 and cell[1] == 0:
-##                    4 cases
-#                    pass
-#                elif cell[0] == 0 and cell[1] == h-1:
-##                    4 cases
-#                    pass
-#                elif cell[0] == w-1 and cell[1] == h-1:
-##                    4 cases
-#                    pass
-#                elif cell[0] == 0 and cell[1] != 0 and cell[1] != h-1:
-##                    6 cases
-#                    pass
-#                elif cell[0] == w-1 and cell[1] != 0 and cell[1] != h-1:
-##                    6 cases
-#                    pass
-#                elif cell[0] != 0 and cell[0] != w-1 and cell[1] == 0:
-##                    6 cases   
-#                    pass
-#                elif cell[0] != 0 and cell[0] != w-1 and cell[1] == h-1:
-##                    6 cases
-#                    pass
-#                else:
-##                    9 cases
-#                    pass
-#                
-#        elif player == "werwolves":
-#            for cell in self.get_werewolves_list():
-#                for i in range(cell[2]+1):
-#                    pass
-#        else:
-#            print("vampires or werewolves must be provided as player")
-
-
+        all_children = []
+        w = self.width
+        h = self.height
+        interm_children = []
+        
+        if player == "vampires":
+            for cell in self.get_vampires_list():
+                interm_children.append(moves_from_cell_players(cell[2], (cell[0], cell[1]) , w, h))
+            return interm_children
+                
+         """A faire: on a obtenu les mouvements possibles par cellules. 
+         Il faut les combiner pour obtenir tous les états enfants. Ensuite, il faudra
+         écrire une fonction qui prend un état, un état enfant et renvoie une liste de mouvemenst pour passer
+         d'un état à l'autre"""
+         
+         
+         
     def compute_heuristic(self, player):
         """Method which take a state and return the associated heuristic"""
         if player == "vampires":
@@ -247,7 +222,7 @@ class State():
     
 #Trials
 
-#test = State([[9, 0, 2, 0, 0], [4, 1, 0, 0, 4],  [2, 2, 4, 0, 0],  [9, 2, 1, 0, 0],  [4, 3, 0, 4, 0], [9, 4, 2, 0, 0]] )  
+test = State([[9, 0, 2, 0, 0], [4, 1, 0, 0, 4],  [2, 2, 4, 2, 0],  [9, 2, 1, 0, 0],  [4, 3, 0, 4, 0], [9, 4, 2, 0, 0]], 10, 5)  
 #print(test.get_humans_list())
 #print(test.get_nb_humans())
 #print(test.get_vampires_list())
