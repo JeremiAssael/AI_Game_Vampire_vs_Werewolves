@@ -4,10 +4,7 @@ import argparse
 import socket
 import struct
 import time
-import random
 import state as st
-from node import Node
-from tree import Tree
 
 HOST = "localhost"
 PORT = "5555" 
@@ -67,7 +64,7 @@ else:
  
     
 
-initial_state = st.State(st.split_in_chunks(map_commands_raw), height, width)  
+initial_state = st.State(st.split_in_chunks(map_commands_raw), width, height)  
 #l'état reçu par map est le tout premier état du systeme.
 #Il est contenu dans map_commands_raw
 
@@ -96,30 +93,20 @@ while entree:
         
         
         
-        
-        #obtention de l'etat intermediaire de la carte
-        modifications = st.split_in_chunks(upd_commands_raw)
-        intermediary_state = intermediary_state.new_state(modifications)
-        
-        
-        # MOV        
-        ########## HERE RESULTS MOVES WANT"""" 
-        list_movements= []
-        children = intermediary_state.get_all_children("vampires")
-        a = random.randint(0, len(children))
-        chosen_movement = children[a]
-        for i in range(len(children[a])):
-            if children[a][i][2] != 0 and children[a][i][0] != children[a][i][3] and children[a][i][1] != children[a][i][4]:
-#                Pour s'assurer qu'aucun point n'est à la fois source et target
-                list_movements.append(children[a][i])
+            #obtention de l'etat intermediaire de la carte
+            modifications = st.split_in_chunks(upd_commands_raw)
+            intermediary_state = intermediary_state.new_state(modifications)
             
-        
-       
-
-        NUMBEROFMOVESTOPERFORM = len(list_movements)
-        
-        sock.send("MOV".encode("ascii"))
-        sock.send(struct.pack("1B",  NUMBEROFMOVESTOPERFORM))
-        for i in range(NUMBEROFMOVESTOPERFORM):
-            for j in range(5):
-                sock.send(struct.pack("1B",  list_movements[i][j])) 
+            # MOV        
+            ########## HERE RESULTS MOVES WANT"""" 
+            list_movements = [intermediary_state.random_moves("vampires")]
+            
+           
+    
+            NUMBEROFMOVESTOPERFORM = len(list_movements)
+            
+            sock.send("MOV".encode("ascii"))
+            sock.send(struct.pack("1B",  NUMBEROFMOVESTOPERFORM))
+            for i in range(NUMBEROFMOVESTOPERFORM):
+                for j in range(5):
+                    sock.send(struct.pack("1B",  list_movements[i][j])) 

@@ -30,6 +30,16 @@ class Tree():
             if node in nd.children:
                 return nd
         return None
+
+    def merge_tree(self, other):
+        for nd in self.nodes:
+            for ot in other.nodes:
+                if ot != other.root and other.root == nd:
+                    self.add_node(ot, nd)
+        return self
+            
+    
+        
     
 #    def is_leaf(self, node):
 #        """Method stating if a node is a leaf of the tree"""
@@ -68,19 +78,19 @@ class Tree():
 
 #Trials
     
-#root = nde.Node("root", 0.45)
-#tree = Tree(root)
-#c= nde.Node("c", 2.34)
-#d= nde.Node("d", 56)
-#e= nde.Node("e", 87)
-#f= nde.Node("f", 78)
-#g = nde.Node("g", 67)
-#h = nde.Node("h", 698)
-#tree.add_node(c, root)
-#tree.add_node(d, c)
-#tree.add_node(e, root)
-#tree.add_node(f, e)
-#tree.add_node(g, c)
-#tree.add_node(h, d)
+root = nde.Node("root", 0.45)
+tree = Tree(root)
+c= nde.Node("c", 2.34)
+d= nde.Node("d", 56)
+e= nde.Node("e", 87)
+f= nde.Node("f", 78)
+g = nde.Node("g", 67)
+h = nde.Node("h", 698)
+tree.add_node(c, root)
+tree.add_node(d, c)
+tree.add_node(e, root)
+tree.add_node(f, e)
+tree.add_node(g, c)
+tree.add_node(h, d)
 
 
