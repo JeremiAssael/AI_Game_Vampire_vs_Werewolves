@@ -242,10 +242,8 @@ class State():
                 score = []
                 random.shuffle(moves_list)
                 for i in range(8):
-                    print(moves_list[i])
                     score.append(self.compute_movement_heuristic(moves_list[i], player))
                 ind = np.argmax(score)
-                print(score[ind])
                 return list(moves_list[ind])
             
         elif player == "werewolves":
@@ -525,7 +523,6 @@ class State():
         score = 100
         #compute mouvement effect:
         modifs = self.compute_movement_effect(move, player)
-        print(modifs)
         new_state = self.new_state(modifs)
         old_state = self
         old_v_list = old_state.get_vampires_list()
