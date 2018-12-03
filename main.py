@@ -99,7 +99,7 @@ while entree:
             
             # MOV        
             ########## HERE RESULTS MOVES WANT"""" 
-            list_movements = [intermediary_state.random_moves("vampires")]
+            list_movements = [intermediary_state.basic_moves("vampires")]
             
            
     
