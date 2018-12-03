@@ -6,6 +6,8 @@ Created on Sun Dec  2 16:39:02 2018
 """
 
 import random
+import tree
+import node
 
 
 def split_in_chunks(flat_state_list):
@@ -111,8 +113,52 @@ class State():
                 moves_list.extend([[x, y, nb_players, x,y], [x, y, nb_players,x,y-1], [x, y, nb_players,x, y+1], [x, y, nb_players,x+1, y], [x, y, nb_players,x+1, y-1], [x, y, nb_players,x+1, y+1], [x, y, nb_players,x-1, y], [x, y, nb_players,x-1, y-1], [x, y, nb_players,x-1, y+1]])
                 choice = random.randint(1,8)
                 return list(moves_list[choice])
-        else: 
-            pass
+        elif player == "werewolves":
+            werewolves_list = self.get_werewolves_list()
+            x = werewolves_list[0][0]
+            y = werewolves_list[0][1]
+            nb_players = werewolves_list[0][2]
+            if x >= w or y >= h:
+                print("Position error")
+            elif (x == 0 and y == 0):
+                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x+1,y], [x, y, nb_players, x, y+1], [x, y, nb_players, x+1, y+1]])
+                choice = random.randint(1,3)
+                return list(moves_list[choice])
+            elif (x == w-1 and y == 0):
+                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x-1,y], [x, y, nb_players, x, y+1], [x, y, nb_players, x-1, y+1]])
+                choice = random.randint(1,3)
+                return list(moves_list[choice])
+            elif (x == 0 and y == h-1):
+                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x+1,y], [x, y, nb_players, x, y-1], [x, y, nb_players, x+1, y-1]])
+                choice = random.randint(1,3)
+                return list(moves_list[choice])
+            elif (x == w-1 and y == h-1):
+                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x-1,y], [x, y, nb_players, x, y-1], [x, y, nb_players, x-1, y-1]])
+                choice = random.randint(1,3)
+                return list(moves_list[choice])
+            elif (x == 0 and y != 0 and y != h-1):
+                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x,y+1], [x, y, nb_players, x, y-1], [x, y, nb_players, x+1, y ], [x, y, nb_players, x+1, y-1], [x, y, nb_players, x+1, y+1]])
+                choice = random.randint(1,5)
+                return list(moves_list[choice])
+            elif (x == w-1 and y != 0 and y != h-1):
+                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x,y+1], [x, y, nb_players, x, y-1], [x, y, nb_players, x-1, y], [x, y, nb_players, x-1, y-1], [x, y, nb_players, x-1, y+1]])
+                choice = random.randint(1,5)
+                return list(moves_list[choice])
+            elif (x != 0 and x != w-1 and y == 0):
+                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x,y+1], [x, y, nb_players, x+1, y], [x, y, nb_players, x+1, y+1], [x, y, nb_players, x-1, y], [x, y, nb_players, x-1, y+1]])
+                choice = random.randint(1,5)
+                return list(moves_list[choice])
+            elif (x != 0 and x != w-1 and y == h-1):
+                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players,x,y-1], [x, y, nb_players,x+1, y], [x, y, nb_players,x+1, y-1], [x, y, nb_players,x-1, y], [x, y, nb_players,x-1, y-1]])
+                choice = random.randint(1,5)
+                return list(moves_list[choice])
+            else:
+                moves_list.extend([[x, y, nb_players, x,y], [x, y, nb_players,x,y-1], [x, y, nb_players,x, y+1], [x, y, nb_players,x+1, y], [x, y, nb_players,x+1, y-1], [x, y, nb_players,x+1, y+1], [x, y, nb_players,x-1, y], [x, y, nb_players,x-1, y-1], [x, y, nb_players,x-1, y+1]])
+                choice = random.randint(1,8)
+                return list(moves_list[choice])
+            
+            
+    
         
     
     def get_humans_list(self):
@@ -166,13 +212,147 @@ class State():
                 count += self.state_list[i][4]
         return count
     
-            
-    def compute_heuristic(self, player):
+    def compute_movement_score(self, move, player):
         """Method which take a state and return the associated heuristic"""
+        score = 100
         if player == "vampires":
-            return self.get_nb_vampires() - self.get_nb_werewolves()
+            v_list = self.get_vampires_list()
+            part_1 = self.get_nb_vampires() - self.get_nb_werewolves()
+            w_list = self.get_werewolves_list()
+            h_list = self.get_humans_list()
+            list_vectors_werewolves = []
+            list_vectors_humans = []
+            list_ps_werewolves = []
+            list_ps_humans = []
+            for i in range(len(w_list)):
+                vect = [w_list[i][0]-move[0][3], w_list[i][1]-move[0][4]]
+                list_vectors_werewolves.append(vect)
+            for h in range(len(h_list)):
+                vect = [h_list[h][0]-move[0][3], h_list[h][1]-move[0][4]]
+                list_vectors_humans.append(vect)
+            for i in range(len(list_vectors_humans)):
+                vect = 3
+                
+            
         elif player == "werewolves":
-            return self.get_nb_werewolves() - self.get_nb_vampires()
+            part_1 =  self.get_nb_werewolves() - self.get_nb_vampires()
+        
+
+
+#    def moves(self, player):
+#        h = self.height
+#        w = self.width
+#        moves_list = []
+#        if player == "vampires":
+#            vampires_list = self.get_vampires_list()
+#            x = vampires_list[0][0]
+#            y = vampires_list[0][1]
+#            nb_players = vampires_list[0][2]
+#            if x >= w or y >= h:
+#                print("Position error")
+#            elif (x == 0 and y == 0):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x+1,y], [x, y, nb_players, x, y+1], [x, y, nb_players, x+1, y+1]])
+#                return moves_list[1:4]
+#            elif (x == w-1 and y == 0):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x-1,y], [x, y, nb_players, x, y+1], [x, y, nb_players, x-1, y+1]])
+#                return moves_list[1:4]
+#            elif (x == 0 and y == h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x+1,y], [x, y, nb_players, x, y-1], [x, y, nb_players, x+1, y-1]])
+#                return moves_list[1:4]
+#            elif (x == w-1 and y == h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x-1,y], [x, y, nb_players, x, y-1], [x, y, nb_players, x-1, y-1]])
+#                return moves_list[1:4]
+#            elif (x == 0 and y != 0 and y != h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x,y+1], [x, y, nb_players, x, y-1], [x, y, nb_players, x+1, y ], [x, y, nb_players, x+1, y-1], [x, y, nb_players, x+1, y+1]])
+#                return moves_list[1:6]
+#            elif (x == w-1 and y != 0 and y != h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x,y+1], [x, y, nb_players, x, y-1], [x, y, nb_players, x-1, y], [x, y, nb_players, x-1, y-1], [x, y, nb_players, x-1, y+1]])
+#                return moves_list[1:6]
+#            elif (x != 0 and x != w-1 and y == 0):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x,y+1], [x, y, nb_players, x+1, y], [x, y, nb_players, x+1, y+1], [x, y, nb_players, x-1, y], [x, y, nb_players, x-1, y+1]])
+#                return moves_list[1:6]
+#            elif (x != 0 and x != w-1 and y == h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players,x,y-1], [x, y, nb_players,x+1, y], [x, y, nb_players,x+1, y-1], [x, y, nb_players,x-1, y], [x, y, nb_players,x-1, y-1]])
+#                return moves_list[1:6]
+#            else:
+#                moves_list.extend([[x, y, nb_players, x,y], [x, y, nb_players,x,y-1], [x, y, nb_players,x, y+1], [x, y, nb_players,x+1, y], [x, y, nb_players,x+1, y-1], [x, y, nb_players,x+1, y+1], [x, y, nb_players,x-1, y], [x, y, nb_players,x-1, y-1], [x, y, nb_players,x-1, y+1]])
+#                return moves_list[1:9]
+#        elif player == "werewolves":
+#            werewolves_list = self.get_werewolves_list()
+#            x = werewolves_list[0][0]
+#            y = werewolves_list[0][1]
+#            nb_players = werewolves_list[0][2]
+#            if x >= w or y >= h:
+#                print("Position error")
+#            elif (x == 0 and y == 0):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x+1,y], [x, y, nb_players, x, y+1], [x, y, nb_players, x+1, y+1]])
+#                return moves_list[1:4]
+#            elif (x == w-1 and y == 0):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x-1,y], [x, y, nb_players, x, y+1], [x, y, nb_players, x-1, y+1]])
+#                return moves_list[1:4]
+#            elif (x == 0 and y == h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x+1,y], [x, y, nb_players, x, y-1], [x, y, nb_players, x+1, y-1]])
+#                return moves_list[1:4]
+#            elif (x == w-1 and y == h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x-1,y], [x, y, nb_players, x, y-1], [x, y, nb_players, x-1, y-1]])
+#                return moves_list[1:4]
+#            elif (x == 0 and y != 0 and y != h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x,y+1], [x, y, nb_players, x, y-1], [x, y, nb_players, x+1, y ], [x, y, nb_players, x+1, y-1], [x, y, nb_players, x+1, y+1]])
+#                return moves_list[1:6]
+#            elif (x == w-1 and y != 0 and y != h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x,y+1], [x, y, nb_players, x, y-1], [x, y, nb_players, x-1, y], [x, y, nb_players, x-1, y-1], [x, y, nb_players, x-1, y+1]])
+#                return moves_list[1:6]
+#            elif (x != 0 and x != w-1 and y == 0):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players, x,y+1], [x, y, nb_players, x+1, y], [x, y, nb_players, x+1, y+1], [x, y, nb_players, x-1, y], [x, y, nb_players, x-1, y+1]])
+#                return moves_list[1:6]
+#            elif (x != 0 and x != w-1 and y == h-1):
+#                moves_list.extend([[x, y, nb_players,x,y], [x, y, nb_players,x,y-1], [x, y, nb_players,x+1, y], [x, y, nb_players,x+1, y-1], [x, y, nb_players,x-1, y], [x, y, nb_players,x-1, y-1]])
+#                return moves_list[1:6]
+#            else:
+#                moves_list.extend([[x, y, nb_players, x,y], [x, y, nb_players,x,y-1], [x, y, nb_players,x, y+1], [x, y, nb_players,x+1, y], [x, y, nb_players,x+1, y-1], [x, y, nb_players,x+1, y+1], [x, y, nb_players,x-1, y], [x, y, nb_players,x-1, y-1], [x, y, nb_players,x-1, y+1]])
+#                return moves_list[1:9]
+
+
+#    def get_basic_graph(self, player, depth):
+#        """Build a complete graphe of depth 2. Depth 2: Me (=root), you, me"""
+#        """Idée: pas creer d'arbre. Juste node et add childre. Arbre dans le dernier return"""
+#        if depth != 0:
+#            if player=="vampires":
+#                print(1)
+#                self_node = node.Node(self)
+#                moves = self.moves("vampires")
+#                states_list = []
+#                for i in range(len(moves)):
+#                    state_after_move = self.new_state([moves[i]])
+#                    states_list.append(node.Node(state_after_move))
+#                    self_node.add_children(states_list)
+#                depth = depth - 1
+#                for nde in self_node.children:
+#                    nde.state.get_basic_graph("werewolves", depth)   
+#        
+#            elif player=="werewolves":
+#                print(2)
+#                self_node = node.Node(self)
+#                moves = self.moves("werewolves")
+#                states_list = []
+#                for i in range(len(moves)):
+#                    state_after_move = self.new_state([moves[i]])
+#                    states_list.append(node.Node(state_after_move))
+#                    self_node.add_children(states_list)
+#                depth = depth - 1
+#                for nde in self_node.children:
+#                    nde.state.get_basic_graph("vampires", depth)
+#        else:
+#            game_tree = tree.Tree()
+#            game_tree.add_nodes(node.Node(self))
+#            return game_tree
+                
+                
+
+                
+            
+        
+    
             
     
 

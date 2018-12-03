@@ -29,7 +29,7 @@ sock.connect((HOST, int(PORT)))
 # NME
 sock.send("NME".encode("ascii"))
 sock.send(struct.pack("1B",  7))
-sock.send('MAJELOR'.encode("ascii"))
+sock.send('Wetried'.encode("ascii"))
 
 # SET
 header = sock.recv(3).decode("ascii")
