@@ -63,12 +63,17 @@ def compute_successors(s, player):
             nb_separations = 1
         for group in vampires_list:
             possible_directions = allowed_directions(group[0], group[1], width, height)
-            moves.append([[group[0], group[1], group[2], group[0]+ possible_directions[j][0], 
+            """We add as the first term the possible directions so that we can easily have it afterwards, 
+            so, in the state some elements will have 6 elements, the first being the direction.
+            To remove for calculations and add back afterwards."""
+            moves.append([[[possible_directions[j][0], possible_directions[j][1]], group[0], group[1], group[2], group[0]+ possible_directions[j][0], 
                            group[1]- possible_directions[j][1]] for j in range(len(possible_directions))])
         moves = cartesian_product(*moves)
+        print(moves)
         new_states = []
         for i in range(len(moves)):
-            new_states.append(compute_states_after_moves(s, moves[i], player))
+#            new_states.append(compute_states_after_moves(s, moves[i][1:5], player))
+            new_states.append(s.new_state(moves[i][1:6]))
         return new_states
     
     elif player == "werewolves":      
@@ -85,18 +90,22 @@ def compute_successors(s, player):
             nb_separations = 1
         for group in werewolves_list:
             possible_directions = allowed_directions(group[0], group[1], width, height)
-            moves.append([[group[0], group[1], group[2], group[0]+ possible_directions[j][0], 
+            moves.append([[[possible_directions[j][0], possible_directions[j][1]], group[0], group[1], group[2], group[0]+ possible_directions[j][0], 
                            group[1]- possible_directions[j][1]] for j in range(len(possible_directions))])
         moves = cartesian_product(*moves)
         new_states = []
         for i in range(len(moves)):
-            new_states.append(compute_states_after_moves(s, moves[i], player))
+            new_states.append(compute_states_after_moves(s, moves[i][1:5], player))
         return new_states
 
             
 
 
 def compute_states_after_moves(state, moves, player):
+    
+    """Have to designed a function which take a state and list of moves 
+    [[direction], x, y, nb, new x, new y] and return the new state"""
+    
     w = state.width
     h = state.height
     s = state.state_list
@@ -214,9 +223,21 @@ def expected_gain_monsters(E1,E2):
 
 
 def max_value(state, alpha, beta, player, depth, depth_max):
+    w = state.width
+    h = state.height
     if player == "vampires":
         if depth == depth_max:
-            return [heuristic(state, player), state]
+            """we kept the directions in the states so that they are easy to 
+            find, we have to remove them to compute the heuristic"""
+            sl = state.state_list
+            s_for_h = []
+            for i in range(len(sl)):
+                if len(sl[i]) == 5:
+                    s_for_h.append(sl[i])
+                else:
+                    s_for_h.append(sl[i][1:6])
+            hstate = st.State(s_for_h, w, h)
+            return [heuristic(hstate, player), state]
         depth +=1
         v = -10**99
         successors = compute_successors(state, player)
@@ -229,7 +250,15 @@ def max_value(state, alpha, beta, player, depth, depth_max):
         return [v, suc]
     elif player == "werewolves":
         if depth == depth_max:
-            return [heuristic(state, player), state]
+            sl = state.state_list
+            s_for_h = []
+            for i in range(len(sl)):
+                if len(sl[i]) == 5:
+                    s_for_h.append(sl[i])
+                else:
+                    s_for_h.append(sl[i][1:6])
+            hstate = st.State(s_for_h, w, h)
+            return [heuristic(hstate, player), state]
         depth+=1
         v = -10**99
         successors = compute_successors(state, player)
@@ -243,9 +272,19 @@ def max_value(state, alpha, beta, player, depth, depth_max):
 
                
 def min_value(state, alpha, beta, player, depth, depth_max):
+    w = state.width
+    h = state.height
     if player == "vampires":
         if depth == depth_max:
-            return [heuristic(state, player), state]
+            sl = state.state_list
+            s_for_h = []
+            for i in range(len(sl)):
+                if len(sl[i]) == 5:
+                    s_for_h.append(sl[i])
+                else:
+                    s_for_h.append(sl[i][1:6])
+            hstate = st.State(s_for_h, w, h)
+            return [heuristic(hstate, player), state]
         depth+=1
         v = +10**99
         successors = compute_successors(state, player)
@@ -258,7 +297,15 @@ def min_value(state, alpha, beta, player, depth, depth_max):
         return [v, suc]
     elif player == "werewolves":
         if depth == depth_max:
-            return [heuristic(state, player), state]
+            sl = state.state_list
+            s_for_h = []
+            for i in range(len(sl)):
+                if len(sl[i]) == 5:
+                    s_for_h.append(sl[i])
+                else:
+                    s_for_h.append(sl[i][1:6])
+            hstate = st.State(s_for_h, w, h)
+            return [heuristic(hstate, player), state]
         depth+=1
         v = +10**99
         successors = compute_successors(state, player)
@@ -318,10 +365,11 @@ beta = 10**99
 state = st.State([[9, 0, 2, 0, 0], [4, 1, 0, 4, 0], [4, 2, 5, 0, 0], [2, 3, 0, 7, 0], [9, 4, 2, 0, 0], [1, 4, 0, 4, 0]], 10, 5)           
 state2 = st.State( [[9, 0, 2, 0, 0], [4, 2, 0, 4, 0], [2, 2, 0, 11, 0], [9, 4, 2, 0, 0], [1, 4, 0, 4, 0] ] , 10, 5)           
 player = "vampires"
-#1a = compute_successors(state, player)
+a = compute_successors(state, player)
 #print(a)
 depth = 0
 depth_max = 4
 #b = max_value(state, alpha, beta, player, depth, depth_max) 
+#print(b)
 t2 = time.time()
 print(t1-t2)
