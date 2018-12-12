@@ -51,7 +51,6 @@ def compute_successors(s, player):
     if player == "vampires":      
         possible_directions = []
         moves = []
-        moves_fin = []
         if nb_werewolves <= 0.5* nb_vampires:
             if nb_groups_vampires >= 2:
                 #si on a deja 2 groupes on ne separe pas
@@ -61,19 +60,21 @@ def compute_successors(s, player):
         else : 
             #pas de séparation
             nb_separations = 1
+            
         for group in vampires_list:
             possible_directions = allowed_directions(group[0], group[1], width, height)
             """We add as the first term the possible directions so that we can easily have it afterwards, 
             so, in the state some elements will have 6 elements, the first being the direction.
             To remove for calculations and add back afterwards."""
-            moves.append([[[possible_directions[j][0], possible_directions[j][1]], group[0], group[1], group[2], group[0]+ possible_directions[j][0], 
+#            moves.append([[[possible_directions[j][0], possible_directions[j][1]], group[0], group[1], group[2], group[0]+ possible_directions[j][0], 
+#                           group[1]- possible_directions[j][1]] for j in range(len(possible_directions))])
+            moves.append([[group[0], group[1], group[2], group[0]+ possible_directions[j][0],
                            group[1]- possible_directions[j][1]] for j in range(len(possible_directions))])
         moves = cartesian_product(*moves)
-        print(moves)
         new_states = []
         for i in range(len(moves)):
-#            new_states.append(compute_states_after_moves(s, moves[i][1:5], player))
-            new_states.append(s.new_state(moves[i][1:6]))
+#            new_states.append(compute_states_after_moves(s, moves[i], player))
+            new_states.append(s.new_state(moves[i]))
         return new_states
     
     elif player == "werewolves":      
@@ -90,12 +91,15 @@ def compute_successors(s, player):
             nb_separations = 1
         for group in werewolves_list:
             possible_directions = allowed_directions(group[0], group[1], width, height)
-            moves.append([[[possible_directions[j][0], possible_directions[j][1]], group[0], group[1], group[2], group[0]+ possible_directions[j][0], 
-                           group[1]- possible_directions[j][1]] for j in range(len(possible_directions))])
+#            moves.append([[[possible_directions[j][0], possible_directions[j][1]], group[0], group[1], group[2], group[0]+ possible_directions[j][0], 
+#                           group[1]- possible_directions[j][1]] for j in range(len(possible_directions))])
+        moves.append([[group[0], group[1], group[2], group[0]+ possible_directions[j][0],
+                       group[1]- possible_directions[j][1]] for j in range(len(possible_directions))])
         moves = cartesian_product(*moves)
         new_states = []
         for i in range(len(moves)):
-            new_states.append(compute_states_after_moves(s, moves[i][1:5], player))
+#            new_states.append(compute_states_after_moves(s, moves[i], player))
+            new_states.append(s.new_state(moves[i]))
         return new_states
 
             
@@ -109,79 +113,127 @@ def compute_states_after_moves(state, moves, player):
     w = state.width
     h = state.height
     s = state.state_list
+    moves = list(moves)
     
     if player == "vampires":
         modif = []
+        move_to_remove = []
         for i in range(len(moves)):
             for j in range(len(s)):
-                print(i)
-                print(j)
-                if moves[i][3] == s[j][0] and moves[i][4] == s[j][1] and (s[j][2] != 0 or s[j][3] != 0 or s[j][4] != 0):
-                    ### il y a bataille
-                    ##### regarder si pas deja la case....
-                    if s[j][2]!=0 and s[j][3]!= 0 and s[j][4]!= 0:
-                        nb_vampires1, nb_humans = expected_gain_humans(moves[i][2] + s[j][3], s[j][2])
-                        nb_vampires2, nb_werewolves = expected_gain_monsters(moves[i][2] + s[j][3], s[j][4])
-                        modif.append([moves[i][3], moves[i][4], nb_humans, (nb_vampires1 + nb_vampires2)/2, nb_werewolves])
-                        moves.remove(moves[i])
-                    elif s[j][2]!=0 and s[j][4]!= 0:
-                        nb_vampires1, nb_humans = expected_gain_humans(moves[i][2], s[j][2])
-                        nb_vampires2, nb_werewolves = expected_gain_monsters(moves[i][2], s[j][4])
-                        modif.append([moves[i][3], moves[i][4], nb_humans, (nb_vampires1 + nb_vampires2)/2, nb_werewolves])                       
-                        moves.remove(moves[i])
-                    elif s[j][2]!=0 and s[j][3]!= 0:
-                        nb_vampires1, nb_humans = expected_gain_humans(moves[i][2] + s[j][3], s[j][2])
-                        modif.append([moves[i][3], moves[i][4], nb_humans, nb_vampires1, 0])
-                        moves.remove(moves[i])
-                    elif s[j][3]!=0 and s[j][4]!= 0:
-                        nb_vampires2, nb_werewolves = expected_gain_monsters(moves[i][2] + s[j][3], s[j][4])
-                        modif.append([moves[i][3], moves[i][4], 0, nb_vampires2, nb_werewolves])
-                        moves.remove(moves[i])
-                    elif s[j][2]!=0:
-                        nb_vampires1, nb_humans = expected_gain_humans(moves[i][2], s[j][2])
-                        modif.append([moves[i][3], moves[i][4], nb_humans, nb_vampires1, 0])
-                        moves.remove(moves[i])
-                    elif s[j][3]!=0:
-                        modif.append([moves[i][3], moves[i][4], 0, s[j][3], 0])
-                        moves.remove(moves[i])
-                    else:
-                        nb_vampires2, nb_werewolves = expected_gain_monsters(moves[i][2], s[j][4])
-                        modif.append([moves[i][3], moves[i][4], 0, nb_vampires2, nb_werewolves])
-                        moves.remove(moves[i])
+                if moves[i][3] == s[j][0] and moves[i][4] == s[j][1]:
+                    origin = look_for_case(s, moves[i][0], moves[i][1])
+                    s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3] - moves[i][2], s[origin][4]]
+                    modif.append(result(s[j], moves[i][2], player))
+                    move_to_remove.append(moves[i])
+                    
+        for m in move_to_remove:
+            moves.remove(m)
+        
         for i in range(len(moves)):
+            
+            origin = look_for_case(s, moves[i][0], moves[i][1])
+            s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3] - moves[i][2], s[origin][4]]
             modif.append([moves[i][3], moves[i][4], 0, moves[i][2], 0])
+            
+        state = st.State(s,w,h)
         new_state = state.new_state(modif)
         return new_state
-                    
- 
+    
     elif player == "werewolves":
-        to_remove = []
+        modif = []
+        move_to_remove = []
         for i in range(len(moves)):
             for j in range(len(s)):
-                if moves[i][3] == s[j][0] and moves[i][4] == s[j][1] and (s[j][2] != 0 or s[j][3] != 0):
-                    if s[j][2]!=0 and s[j][3]!= 0:
-                        nb_werewolves1, nb_humans = expected_gain_humans(moves[i][2] + s[j][4], s[j][2])
-                        nb_werewolves2, nb_vampires = expected_gain_monsters(moves[i][2] + s[j][4], s[j][3])
-                        s[j] = [moves[i][3], moves[i][4], nb_humans, nb_vampires, (nb_werewolves1 + nb_werewolves2)/2]                        
-                    elif s[j][2]!= 0:
-                        nb_werewolves1, nb_humans = expected_gain_humans(moves[i][2] + s[j][4], s[j][2])
-                        s[j] = [moves[i][3], moves[i][4], nb_humans, 0, nb_werewolves1]
-                    else:
-                        nb_werewolves2, nb_vampires = expected_gain_monsters(moves[i][2] + s[j][4], s[j][3])
-                        s[j] = [moves[i][3], moves[i][4], 0, nb_vampires, nb_werewolves2]
-                elif moves[i][0] == s[j][0] and moves[i][1] == s[j][1]:
-                    to_remove.append(s[j])      
-                    s.append([moves[i][3], moves[i][4], 0, 0, moves[i][2]])
-        new_state = [s[i] for i in range(len(s)) if s[i] not in to_remove] 
-        return st.State(new_state, w, h)
+                if moves[i][3] == s[j][0] and moves[i][4] == s[j][1]:
+                    origin = look_for_case(s, moves[i][0], moves[i][1])
+                    s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], s[origin][4] - moves[i][2]]
+                    modif.append(result(s[j], moves[i][2], player))
+                    move_to_remove.append(moves[i])
+                    
+        for m in move_to_remove:
+            moves.remove(m)
+        
+        for i in range(len(moves)):
+            origin = look_for_case(s, moves[i][0], moves[i][1])
+            s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], s[origin][4] - moves[i][2]]
+            modif.append([moves[i][3], moves[i][4], 0, 0,  moves[i][2]])
+            
+        state = st.State(s,w,h)
+        new_state = state.new_state(modif)
+        return new_state
                     
                     
                     
         
     
+def result(case, nb_player_moved, player):
+    """ we have a case [x, y nb_h, nb_v, nb_w] and we move nb_player_moved of 
+    monsters of categories player in this case: this function return the new case"""
+    if player == "vampires":
+        modif = []
+        if case[2]!=0 and case[3]!= 0 and case[4]!= 0:
+            nb_vampires1, nb_humans = expected_gain_humans(nb_player_moved + case[3], case[2])
+            nb_vampires2, nb_werewolves = expected_gain_monsters(nb_player_moved + case[3], case[4])
+            modif.append([case[0], case[1], nb_humans, (nb_vampires1 + nb_vampires2)/2, nb_werewolves])
+        elif case[2]!=0 and case[4]!= 0:
+            nb_vampires1, nb_humans = expected_gain_humans(nb_player_moved, case[2])
+            nb_vampires2, nb_werewolves = expected_gain_monsters(nb_player_moved, case[4])
+            modif.append([case[0], case[1], nb_humans, (nb_vampires1 + nb_vampires2)/2, nb_werewolves])                                        
+        elif case[2]!=0 and case[3]!= 0:
+            nb_vampires1, nb_humans = expected_gain_humans(nb_player_moved + case[3], case[2])
+            modif.append([case[0], case[1], nb_humans, nb_vampires1, 0])
+        elif case[3]!=0 and case[4]!= 0:
+            nb_vampires2, nb_werewolves = expected_gain_monsters(nb_player_moved + case[3], case[4])
+            modif.append([case[0], case[1], 0, nb_vampires2, nb_werewolves])
+        elif case[2]!=0:
+            nb_vampires1, nb_humans = expected_gain_humans(nb_player_moved, case[2])
+            modif.append([case[0], case[1], nb_humans, nb_vampires1, 0])
+        elif case[3]!=0:
+            modif.append([case[0], case[1], 0, case[3] + nb_player_moved, 0])
+        elif case[4]!=0:
+            nb_vampires2, nb_werewolves = expected_gain_monsters(nb_player_moved, case[4])
+            modif.append([case[0], case[1], 0, nb_vampires2, nb_werewolves])
+        else:
+            modif.append([case[0], case[1], 0, nb_player_moved, 0])
+        return modif[0]
+    
+    elif player == "werewolves":
+        modif = []
+        if case[2]!=0 and case[3]!= 0 and case[4]!= 0:
+            nb_werewolves1, nb_humans = expected_gain_humans(nb_player_moved + case[4], case[2])
+            nb_werewolves2, nb_vampires = expected_gain_monsters(nb_player_moved + case[4], case[3])
+            modif.append([case[0], case[1], nb_humans, nb_vampires, (nb_werewolves1 + nb_werewolves2)/2])
+        elif case[2]!=0 and case[3]!= 0:
+            nb_werewolves1, nb_humans = expected_gain_humans(nb_player_moved, case[2])
+            nb_werewolves2, nb_vampires = expected_gain_monsters(nb_player_moved, case[3])
+            modif.append([case[0], case[1], nb_humans, nb_vampires, (nb_werewolves1 + nb_werewolves2)/2])                                       
+        elif case[2]!=0 and case[4]!= 0:
+            nb_werewolves, nb_humans = expected_gain_humans(nb_player_moved + case[4], case[2])
+            modif.append([case[0], case[1], nb_humans, 0, nb_werewolves])
+        elif case[3]!=0 and case[4]!= 0:
+            nb_werewolves2, nb_vampires = expected_gain_monsters(nb_player_moved + case[4], case[3])
+            modif.append([case[0], case[1], 0, nb_vampires, nb_werewolves2])
+        elif case[2]!=0:
+            nb_werewolves1, nb_humans = expected_gain_humans(nb_player_moved, case[2])
+            modif.append([case[0], case[1], nb_humans, 0, nb_werewolves1])
+        elif case[4]!=0:
+            modif.append([case[0], case[1], 0, 0, case[4] + nb_player_moved])
+        elif case[3]!=0:
+            nb_werewolves2, nb_vampires = expected_gain_monsters(nb_player_moved, case[3])
+            modif.append([case[0], case[1], 0, nb_vampires, nb_werewolves2])
+        else:
+            modif.append([case[0], case[1], 0, 0, nb_player_moved])
+        return modif[0]
+            
+
+    
 
 
-
+def look_for_case(state_liste, x, y):
+    for i in range(len(state_liste)):
+        if state_liste[i][0] == x and state_liste[i][1] == y:
+            return i
+            
 
 def cartesian_product(*arrays):
     cart_prod = []
@@ -229,100 +281,70 @@ def max_value(state, alpha, beta, player, depth, depth_max):
         if depth == depth_max:
             """we kept the directions in the states so that they are easy to 
             find, we have to remove them to compute the heuristic"""
-            sl = state.state_list
-            s_for_h = []
-            for i in range(len(sl)):
-                if len(sl[i]) == 5:
-                    s_for_h.append(sl[i])
-                else:
-                    s_for_h.append(sl[i][1:6])
-            hstate = st.State(s_for_h, w, h)
-            return [heuristic(hstate, player), state]
+            return heuristic(state, player)
         depth +=1
         v = -10**99
         successors = compute_successors(state, player)
         for suc in successors:
             mn = min_value(state, alpha, beta, "werewolves", depth, depth_max)
-            v = max(v, mn[0])
+            v = max(v, mn)
             if v >= beta:
-                return [v, suc]
+                return v
             alpha = max(alpha, v)
-        return [v, suc]
+        return v
     elif player == "werewolves":
         if depth == depth_max:
-            sl = state.state_list
-            s_for_h = []
-            for i in range(len(sl)):
-                if len(sl[i]) == 5:
-                    s_for_h.append(sl[i])
-                else:
-                    s_for_h.append(sl[i][1:6])
-            hstate = st.State(s_for_h, w, h)
-            return [heuristic(hstate, player), state]
+            return heuristic(state, player)
         depth+=1
         v = -10**99
         successors = compute_successors(state, player)
         for suc in successors:
             mn = min_value(state, alpha, beta, "vampires", depth, depth_max)
-            v = max(v, mn[0])
+            v = max(v, mn)
             if v >= beta:
-                return [v, suc]
+                return v
             alpha = max(alpha, v)
-        return [v, suc]
+        return v
 
                
 def min_value(state, alpha, beta, player, depth, depth_max):
     w = state.width
     h = state.height
+    
     if player == "vampires":
         if depth == depth_max:
-            sl = state.state_list
-            s_for_h = []
-            for i in range(len(sl)):
-                if len(sl[i]) == 5:
-                    s_for_h.append(sl[i])
-                else:
-                    s_for_h.append(sl[i][1:6])
-            hstate = st.State(s_for_h, w, h)
-            return [heuristic(hstate, player), state]
+            return heuristic(state, player)
         depth+=1
         v = +10**99
         successors = compute_successors(state, player)
         for suc in successors:
             mx = max_value(state, alpha, beta, "vampires", depth, depth_max)
-            v = min(v, mx[0])
+            v = min(v, mx)
             if v >= beta:
-                return [v, suc]
+                return v
             beta = min(beta, v)
-        return [v, suc]
+        return v
+    
     elif player == "werewolves":
         if depth == depth_max:
-            sl = state.state_list
-            s_for_h = []
-            for i in range(len(sl)):
-                if len(sl[i]) == 5:
-                    s_for_h.append(sl[i])
-                else:
-                    s_for_h.append(sl[i][1:6])
-            hstate = st.State(s_for_h, w, h)
-            return [heuristic(hstate, player), state]
+            return heuristic(state, player)
         depth+=1
         v = +10**99
         successors = compute_successors(state, player)
         for suc in successors:
             mx = max_value(state, alpha, beta, "werewolves", depth, depth_max)
-            v = min(v, mx[0])
+            v = min(v, mx)
             if v >= beta:
-                return [v, suc]
+                return v
             beta = min(beta, v)
-        return [v, suc]
+        return v
     
 
 def heuristic(state, player):
     if player == "vampires":
-        return state.get_nb_vampires() - (state.get_nb_humans() + state.get_nb_werewolves())
+        return state.get_nb_vampires() - state.get_nb_werewolves()
     elif player == "werewolves":
-        return state.get_nb_werewolves() - (state.get_nb_humans() + state.get_nb_vampires())
+        return state.get_nb_werewolves() - state.get_nb_vampires()
         
 
 def return_movements(new_state, old_state, player):
@@ -362,14 +384,15 @@ def find_movements(can_move, has_been_modified, w, h):
 t1 = time.time()
 alpha = -10**99
 beta = 10**99  
-state = st.State([[9, 0, 2, 0, 0], [4, 1, 0, 4, 0], [4, 2, 5, 0, 0], [2, 3, 0, 7, 0], [9, 4, 2, 0, 0], [1, 4, 0, 4, 0]], 10, 5)           
+state = st.State([[9, 0, 2, 0, 0], [4, 1, 0, 0, 7], [4, 2, 5, 0, 0], [2, 3, 0, 7, 0], [9, 4, 0, 0, 6], [1, 4, 0, 4, 0]], 10, 5)           
 state2 = st.State( [[9, 0, 2, 0, 0], [4, 2, 0, 4, 0], [2, 2, 0, 11, 0], [9, 4, 2, 0, 0], [1, 4, 0, 4, 0] ] , 10, 5)           
 player = "vampires"
-a = compute_successors(state, player)
+moves  = [[4,1,4,4,2], [2,3,7,2,4], [1,4,2,1,5]]
+#a = compute_successors(state, player)
 #print(a)
 depth = 0
 depth_max = 4
-#b = max_value(state, alpha, beta, player, depth, depth_max) 
-#print(b)
+b = max_value(state, alpha, beta, player, depth, depth_max) 
+print(b)
 t2 = time.time()
 print(t1-t2)

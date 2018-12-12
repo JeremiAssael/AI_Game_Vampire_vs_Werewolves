@@ -18,7 +18,7 @@ def split_in_chunks(flat_state_list):
         state_in_chunk.append(list(flat_state_list[i:i+5]))
     return state_in_chunk
 
-        
+
 
 class State():
     """This class represents a state, as in a grid configuration.
@@ -51,7 +51,9 @@ class State():
             modif_length = len(modifications)
             for i in range(modif_length):
                 for j in range(old_length):
-                    if modifications[i][0] == old_state[j][0] and modifications[i][1] == old_state[j][1]:
+                    if modifications[i] == old_state[j]:
+                        modif_to_delete.append(modifications[i])
+                    elif modifications[i][0] == old_state[j][0] and modifications[i][1] == old_state[j][1]:
                         new_state_to_delete.append(old_state[j])
                         new_state_to_add.append(modifications[i])
                         modif_to_delete.append(modifications[i])
@@ -121,6 +123,4 @@ class State():
         return count
     
     
-    
-    
-    
+ 
