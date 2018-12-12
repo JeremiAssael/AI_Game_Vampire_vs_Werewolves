@@ -36,6 +36,8 @@ def allowed_directions(x, y, w, h):
     
     
 def compute_successors(s, player):
+    """return sucessors of state s as [proba, [directions], [successor state]]
+    
     humans_list = s.get_humans_list()
     vampires_list = s.get_vampires_list()
     werewolves_list = s.get_werewolves_list()
@@ -66,16 +68,12 @@ def compute_successors(s, player):
             """We add as the first term the possible directions so that we can easily have it afterwards, 
             so, in the state some elements will have 6 elements, the first being the direction.
             To remove for calculations and add back afterwards."""
-            moves.append([[[possible_directions[j][0], possible_directions[j][1]], [group[0], group[1], group[2], group[0]+ possible_directions[j][0],
-                          group[1]- possible_directions[j][1]]] for j in range(len(possible_directions))])
-#            moves.append([[group[0], group[1], group[2], group[0]+ possible_directions[j][0],
-#                           group[1]- possible_directions[j][1]] for j in range(len(possible_directions))])
+            moves.append([[[possible_directions[j][0], possible_directions[j][1]], [group[0], group[1], group[2], group[0]+ possible_directions[j][0], 
+                            group[1]- possible_directions[j][1]]] for j in range(len(possible_directions))])
         moves = cartesian_product(*moves)
-        print(moves)
         new_states = []
         for i in range(len(moves)):
-#            new_states.append(compute_states_after_moves(s, moves[i], player))
-            new_states.append(s.new_state(moves[i]))
+            new_states.append(compute_states_after_moves(s, list(moves[i]), player))
         return new_states
     
     elif player == "werewolves":      
@@ -94,13 +92,10 @@ def compute_successors(s, player):
             possible_directions = allowed_directions(group[0], group[1], width, height)
             moves.append([[[possible_directions[j][0], possible_directions[j][1]], [group[0], group[1], group[2], group[0]+ possible_directions[j][0],
                           group[1]- possible_directions[j][1]]] for j in range(len(possible_directions))])
-#        moves.append([[group[0], group[1], group[2], group[0]+ possible_directions[j][0],
-#                       group[1]- possible_directions[j][1]] for j in range(len(possible_directions))])
         moves = cartesian_product(*moves)
         new_states = []
         for i in range(len(moves)):
-#            new_states.append(compute_states_after_moves(s, moves[i], player))
-            new_states.append(s.new_state(moves[i]))
+            new_states.append(compute_states_after_moves(s, list(moves[i]), player))
         return new_states
 
             
@@ -113,10 +108,10 @@ def compute_states_after_moves(state, moves, player):
     Have to return :
          [proba, [directions], state]"""
 
-    
     w = state.width
     h = state.height
-    s = state.state_list
+    stte = state.state_list
+    s = stte.copy()
     moves = list(moves)
     
     directions = []
@@ -169,48 +164,71 @@ def compute_states_after_moves(state, moves, player):
         for i in range(len(s)):
             modif_with_proba.append([1, s[i]])
             
-        print(modif_with_proba)
+        states_with_proba = from_modifs_to_states(s, modif_with_proba)
         
-        """Ok j'ai maintenant la liste de toutes les modifs avec proba associées, il faut 
-        construire toutes les listes possibles de modifs avec leur proba associées:
-            commencer par créer le nombre de liste dont on aura besoin: le nombre d'états différents
-            par exemple, si 3 états ou 2 modifs possibles, on a 2^3 possibles soit 8
-            Pour cela, création fonction from modifs to state"""
+        try:
+            for i in range(len(states_with_proba)):
+                states_with_proba[i].insert(1, directions)
+        except:
+            states_with_proba.insert(1, directions)
             
-#        
-#        for i in range(len(moves_liste)):
-#            
-#            origin = look_for_case(s, moves_liste[i][0], moves_liste[i][1])
-#            s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3] - moves_liste[i][2], s[origin][4]]
-#            modif.append([moves_liste[i][3], moves_liste[i][4], 0, moves_liste[i][2], 0])
-#            
-#        state = st.State(s,w,h)
-#        new_state = state.new_state(modif)
-#        return new_state
-    
-#    elif player == "werewolves":
-#        modif = []
-#        move_to_remove = []
-#        for i in range(len(moves)):
-#            for j in range(len(s)):
-#                if moves[i][3] == s[j][0] and moves[i][4] == s[j][1]:
-#                    origin = look_for_case(s, moves[i][0], moves[i][1])
-#                    s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], s[origin][4] - moves[i][2]]
-#                    modif.append(result(s[j], moves[i][2], player))
-#                    move_to_remove.append(moves[i])
-#                    
-#        for m in move_to_remove:
-#            moves.remove(m)
-#        
-#        for i in range(len(moves)):
-#            origin = look_for_case(s, moves[i][0], moves[i][1])
-#            s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], s[origin][4] - moves[i][2]]
-#            modif.append([moves[i][3], moves[i][4], 0, 0,  moves[i][2]])
-#            
-#        state = st.State(s,w,h)
-#        new_state = state.new_state(modif)
-#        return new_state
-#                    
+            
+        return states_with_proba
+            
+        
+    elif player == "werewolves":        
+        modif_with_proba = []
+        move_to_remove = []
+        state_to_remove1 = []
+        state_to_remove2 = []
+        
+        for i in range(len(moves_liste)):
+            for j in range(len(s)):
+                if is_not_empty(s[j], moves_liste[i]):
+                    origin = look_for_case(s, moves_liste[i][0], moves_liste[i][1])
+                    s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], s[origin][4] - moves_liste[i][2]]
+                    
+                    modif_with_proba.append(result(s[j], moves_liste[i][2], player))
+                    move_to_remove.append(moves_liste[i])
+                    
+        for k in range(len(s)):
+            if s[k][2] == 0 and s[k][3] == 0 and s[k][4] == 0:
+                state_to_remove1.append(s[k])
+                
+        for item in state_to_remove1:
+            s.remove(item)
+                        
+        for m in move_to_remove:
+            moves_liste.remove(m)
+         
+        """now only remain move in a case which is not already in state"""
+        
+        for i in range(len(moves_liste)):
+            origin = look_for_case(s, moves_liste[i][0], moves_liste[i][1])
+            s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], s[origin][4] - moves_liste[i][2]]
+            modif_with_proba.append([1, [moves_liste[i][3], moves_liste[i][4], 0, 0, moves_liste[i][2]]])
+            
+        for k in range(len(s)):
+            """remove empty states"""
+            if s[k][2] == 0 and s[k][3] == 0 and s[k][4] == 0:
+                state_to_remove2.append(s[k])
+                
+        for item in state_to_remove2:
+            s.remove(item)
+        
+        
+        for i in range(len(s)):
+            modif_with_proba.append([1, s[i]])
+            
+        states_with_proba = from_modifs_to_states(s, modif_with_proba)
+        
+        try:
+            for i in range(len(states_with_proba)):
+                states_with_proba[i].insert(1, directions)
+        except:
+            states_with_proba.insert(1, directions)
+            
+        return states_with_proba
 
 
 def from_modifs_to_states(state, modifs):
@@ -223,62 +241,53 @@ def from_modifs_to_states(state, modifs):
     to_spread = []
     
     for i in range(len(modifs)):
-        if type(modifs[i][0]) == list:
+        if type(modifs[i][0]) == list and modifs[i][0][0] != 1:
             nb += 1
-            to_spread.append(modifs[i])
-            
+            to_spread.append(modifs[i])            
         else:
-            common_final_state.append(modifs[i][1])
+            try:
+                common_final_state.append(modifs[i][0][1])
+            except:
+                common_final_state.append(modifs[i][1])
 
-     
-    nb_states = 2**nb   
-    states_list = []   
-    intermediary = []
-    liste_possibilities = iterate_possibilities(len(to_spread))
     
-    
-    for i in range(nb_states):
-        for couple in list(zip([w for w in range(len(to_spread))], liste_possibilities[i])):
-            intermediary.append(to_spread[couple[0]][couple[1]])
-        states_list.append(intermediary)
+    if len(to_spread) == 0:
+         end_states = [1, common_final_state]
+         return end_states
+    else:
+        nb_states = 2**nb   
+        states_list = []   
         intermediary = []
-    
-    """ now i have my states_list, just have to extract for each of them the probabilities and
-    the states"""
-    
-    end_states = []
-    
-    for i in range(len(states_list)):
-        n = len(states_list[i])
-        proba = states_list[i][0][0]
-        one_state = [states_list[i][0][1]]
-        for j in range(1,n):
-            proba = proba * states_list[i][j][0]
-            one_state.append(states_list[i][j][1])
-        end_states.append([proba, one_state])
+        liste_possibilities = iterate_possibilities(len(to_spread))
         
-    for i in range(len(end_states)):
-        for j in range(len(common_final_state)):
-            end_states[i][1].append(common_final_state[j])
-            
-    return end_states
+        if len(to_spread) !=0:
+            for i in range(nb_states):
+                for couple in list(zip([w for w in range(len(to_spread))], liste_possibilities[i])):
+                    intermediary.append(to_spread[couple[0]][couple[1]])
+                states_list.append(intermediary)
+                intermediary = []
         
+        """ now i have my states_list, just have to extract for each of them the probabilities and
+        the states"""
         
+        end_states = []
+        if len(states_list) != 0:
+            for i in range(len(states_list)):
+                n = len(states_list[i])
+                proba = states_list[i][0][0]
+                one_state = [states_list[i][0][1]]
+                for j in range(1,n):
+                    proba = proba * states_list[i][j][0]
+                    one_state.append(states_list[i][j][1])
+                end_states.append([proba, one_state])
             
-            
+        for i in range(len(end_states)):
+            for j in range(len(common_final_state)):
+                end_states[i][1].append(common_final_state[j])
+                
+        return end_states
         
-    
-            
-    
-    
-    
-    
-
-            
-    
-    
-    
-                        
+                     
                     
 def is_not_empty(case, move):
     not_empty = False
@@ -494,14 +503,14 @@ def heuristic(state, player):
 t1 = time.time()
 alpha = -10**99
 beta = 10**99  
-state = st.State([[6, 7, 0, 4, 0], [4, 1, 0, 0, 4], [4, 2, 0, 5, 0], [2, 3, 4, 0, 0], [5, 8, 0, 4, 0], [1, 4, 0, 4, 0]], 10, 5)           
+state = st.State([[6, 2, 0, 4, 0], [4, 1, 0, 0, 4], [4, 2, 0, 5, 0], [2, 3, 4, 0, 0], [5, 1, 0, 4, 0], [1, 4, 0, 0, 4]], 10, 5)           
 state2 = st.State( [[9, 0, 2, 0, 0], [4, 2, 0, 4, 0], [2, 2, 0, 11, 0], [9, 4, 2, 0, 0], [1, 4, 0, 4, 0] ] , 10, 5)           
 player = "vampires"
 moves  = [[[1, 0], [6,7,4,7,7]], [[0, 1], [4,2,5,4,1]], [[0, -1],[1,4,2,1,5]]]
 modifs = [[[0.75, [4, 1, 0, 4, 0]], [0.25, [4, 1, 0, 0, 1]]], [[0.65, [4, 1, 0, 4, 0]], [0.35, [4, 1, 0, 0, 1]]], [1, [7, 7, 0, 4, 0]], [1, [1, 5, 0, 2, 0]], [1, [4, 1, 0, 0, 4]], [1, [2, 3, 4, 0, 0]], [1, [5, 8, 0, 4, 0]], [1, [1, 4, 0, 2, 0]]]
-#a = compute_states_after_moves(state, moves, player)
-#print(a)
-a = from_modifs_to_states(state, modifs)
+a = compute_successors(state, player)
+print(a)
+#a = from_modifs_to_states(state, modifs)
 depth = 0
 depth_max = 4
 #b = max_value(state, alpha, beta, player, depth, depth_max) 
