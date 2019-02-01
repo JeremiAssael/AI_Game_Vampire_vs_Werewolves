@@ -5,7 +5,8 @@ import socket
 import struct
 import time
 import state as st
-import heuristic_1 as hc
+import alpha_beta as ab
+
 
 #HOST = "138.195.205.141"
 HOST = "localhost"
@@ -98,19 +99,16 @@ while entree:
             #obtention de l'etat intermediaire de la carte
             modifications = st.split_in_chunks(upd_commands_raw)
             intermediary_state = intermediary_state.new_state(modifications)
-            print(intermediary_state)
-            
+ 
             # MOV        
             ########## HERE RESULTS MOVES WANT"""" 
-            # all the coefficients are normalized up to 1
-            alpha_m = 0.99
-            alpha_h = 0.02
-            beta_m = 1 - alpha_m
-            beta_h = 1- alpha_h
             player = "vampires"
-            mode = "dynamic"
-            list_movements = [hc.compute_movements(intermediary_state, alpha_m, alpha_h, beta_m, beta_h, player, mode)]
-            
+            alpha = -10**99
+            beta = 10**99 
+            depth = 0
+            depth_max = 3
+            list_movements = ab.compute_best_direction(intermediary_state, alpha, beta, player, depth, depth_max)
+            print(list_movements)
            
     
             NUMBEROFMOVESTOPERFORM = len(list_movements)
