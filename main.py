@@ -91,10 +91,11 @@ while entree:
         if header != "UPD":
             print("Protocol Error at UPD")
         else:
+            
             number_upd_commands = receive_data(sock,1, "1B")[0]
             upd_commands_raw = receive_data(sock, number_upd_commands * 5, "{}B".format(number_upd_commands * 5))
         
-        
+            
         
             #obtention de l'etat intermediaire de la carte
             modifications = st.split_in_chunks(upd_commands_raw)
@@ -106,10 +107,12 @@ while entree:
             alpha = -10**99
             beta = 10**99 
             depth = 0
-            depth_max = 3
+            depth_max = 4
             list_movements = ab.compute_best_direction(intermediary_state, alpha, beta, player, depth, depth_max)
-            print(list_movements)
-           
+#            print(list_movements)
+#            list_movements = ab.direction_only_zero(intermediary_state, player)
+            
+            time.sleep(0.5)
     
             NUMBEROFMOVESTOPERFORM = len(list_movements)
             

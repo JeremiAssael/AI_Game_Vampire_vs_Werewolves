@@ -9,29 +9,44 @@ import compute_successors as cs
 import state as st
 import random
 import time
+import heuristic
 
 
-def heuristic(state, player):
-    return random.randint(0, 100)
 
-def max_value(state, alpha, beta, player, depth, depth_max):
+#
+#    alpha_m = 0.99
+#    alpha_h = 0.02
+#    beta_m = 1 - alpha_m
+#    beta_h = 1- alpha_h
+#
+#
+#.compute_score_state(state[2],alpha_m, alpha_h, beta_m, beta_h, player, mode)
+
+
+#def heuristic(state, player):
+#    return random.randint(0, 100)
+
+def max_value(state, alpha, beta, player, depth, depth_max, best_direction=None, best_state=None):
     """let's do alpha beta knowing the particular way of describing a state succesor"""
-
+    alpha_m = 0.5
+    alpha_h = 0.99
+    beta_m = 1 - alpha_m
+    beta_h = 1- alpha_h
+    mode = "dynamic"
     
     if player == "vampires":
         if depth == depth_max:
             """we kept the directions in the states so that they are easy to 
             find, we have to remove them to compute the heuristic"""
-            return [state[0]*heuristic(state[2], player), state[1], state[2]]
+            return [state[0]*heuristic.compute_score_state(state[2],alpha_m, alpha_h, beta_m, beta_h, player, mode), state[1], state[2]]
+#            return [state[0]*random.randint(0, 100), state[1], state[2]]
         depth +=1
         v = -10**99
-        best_direction = None
-        best_state = None
         successors = cs.compute_successors(state[2], player)
         for suc in successors:
             considered_direction = suc[1]
             considered_state = suc[2]
-            min_list = min_value(suc, alpha, beta, "werewolves", depth, depth_max)
+            min_list = min_value(suc, alpha, beta, "werewolves", depth, depth_max, considered_direction, considered_state)
             if min_list[0] > v:
                 v = min_list[0]
                 best_direction = considered_direction
@@ -39,20 +54,20 @@ def max_value(state, alpha, beta, player, depth, depth_max):
             if v >= beta:
                 return [v, best_direction, best_state]
             alpha = max(alpha, v)
+        print(best_direction)
         return [v, best_direction, best_state]
     
     elif player == "werewolves":
         if depth == depth_max:
-            return [state[0]*heuristic(state[2], player), state[1], state[2]]
+            return [state[0]*heuristic.compute_score_state(state[2],alpha_m, alpha_h, beta_m, beta_h, player, mode), state[1], state[2]]
+#            return [state[0]*random.randint(0, 100), state[1], state[2]]
         depth+=1
         v = -10**99
-        best_direction = None
-        best_state = None
         successors = cs.compute_successors(state[2], player)
         for suc in successors:
             considered_direction = suc[1]
             considered_state = suc[2]
-            min_list = min_value(suc, alpha, beta, "vampires", depth, depth_max)
+            min_list = min_value(suc, alpha, beta, "vampires", depth, depth_max, considered_direction, considered_state)
             if min_list[0] > v:
                 v = min_list[0]
                 best_direction = considered_direction
@@ -60,25 +75,30 @@ def max_value(state, alpha, beta, player, depth, depth_max):
             if v >= beta:
                 return [v, best_direction, best_state]
             alpha = max(alpha, v)
+#        print(best_direction)
         return [v, best_direction, best_state]
 
 
                
-def min_value(state, alpha, beta, player, depth, depth_max):
+def min_value(state, alpha, beta, player, depth, depth_max, best_direction=None, best_state=None):
     
+    alpha_m = 0.5
+    alpha_h = 0.99
+    beta_m = 1 - alpha_m
+    beta_h = 1- alpha_h
+    mode = "dynamic"
     
     if player == "vampires":
         if depth == depth_max:
-            return [state[0]*heuristic(state[2], player), state[1], state[2]]
+            return [state[0]*heuristic.compute_score_state(state[2],alpha_m, alpha_h, beta_m, beta_h, player, mode), state[1], state[2]]
+#            return [state[0]*random.randint(0, 100), state[1], state[2]]
         depth+=1
         v = +10**99
-        best_direction = None
-        best_state = None
         successors = cs.compute_successors(state[2], player)
         for suc in successors:
             considered_direction = suc[1]
             considered_state = suc[2]
-            max_list = max_value(suc, alpha, beta, "werewolves", depth, depth_max)
+            max_list = max_value(suc, alpha, beta, "werewolves", depth, depth_max, considered_direction, considered_state)
             if max_list[0] < v:
                 v = max_list[0]
                 best_direction = considered_direction
@@ -86,20 +106,20 @@ def min_value(state, alpha, beta, player, depth, depth_max):
             if v >= beta:
                 return [v, best_direction, best_state]
             beta = min(beta, v)
+#        print(best_direction)
         return [v, best_direction, best_state]
     
     elif player == "werewolves":
         if depth == depth_max:
-            return [state[0]*heuristic(state[2], player), state[1], state[2]]
+            return [state[0]*heuristic.compute_score_state(state[2],alpha_m, alpha_h, beta_m, beta_h, player, mode), state[1], state[2]]
+#            return [state[0]*random.randint(0, 100), state[1], state[2]]
         depth+=1
         v = +10**99
-        best_direction = None
-        best_state = None
         successors = cs.compute_successors(state[2], player)
         for suc in successors:
             considered_direction = suc[1]
             considered_state = suc[2]
-            max_list = max_value(suc, alpha, beta, "vampires", depth, depth_max)
+            max_list = max_value(suc, alpha, beta, "vampires", depth, depth_max, considered_direction, considered_state)
             if max_list[0] < v:
                 v = max_list[0]
                 best_direction = considered_direction
@@ -131,9 +151,26 @@ def from_direction_to_move(alpha_beta_result, intermediary_state, player):
        
 def compute_best_direction(state, alpha, beta, player, depth, depth_max):
     st_pre = preprocessing_before_alphabeta(state)
-    alph_bet = max_value(st_pre, alpha, beta, player, depth, depth_max) 
+    alph_bet = max_value(st_pre, alpha, beta, player, depth, depth_max, best_direction=None, best_state=None) 
     final = from_direction_to_move(alph_bet, state, player)
     return final
+ 
+def direction_only_zero(state, player):
+    alpha_m = 0.5
+    alpha_h = 0.99
+    beta_m = 1 - alpha_m
+    beta_h = 1- alpha_h
+    mode = "dynamic"
+    def takeFirst(elem):
+        return elem[0]
+    
+    suc = cs.compute_successors(state, player)
+    list_proposition = []
+    for s in suc:
+        list_proposition.append([s[0]*heuristic.compute_score_state(s[2],alpha_m, alpha_h, beta_m, beta_h, player, mode), s[1], s[2]])
+    list_proposition = sorted(list_proposition, reverse=True, key=takeFirst)
+    print(list_proposition)
+    return from_direction_to_move(list_proposition[0], state, player)
     
     
     
@@ -146,7 +183,7 @@ player = "vampires"
 moves  = [[[1, 0], [6,7,4,7,7]], [[0, 1], [4,2,5,4,1]], [[0, -1],[1,4,2,1,5]]]
 modifs = [[[0.75, [4, 1, 0, 4, 0]], [0.25, [4, 1, 0, 0, 1]]], [[0.65, [4, 1, 0, 4, 0]], [0.35, [4, 1, 0, 0, 1]]], [1, [7, 7, 0, 4, 0]], [1, [1, 5, 0, 2, 0]], [1, [4, 1, 0, 0, 4]], [1, [2, 3, 4, 0, 0]], [1, [5, 8, 0, 4, 0]], [1, [1, 4, 0, 2, 0]]]
 depth = 0
-depth_max = 4
+depth_max = 2
 b = compute_best_direction(state, alpha, beta, player, depth, depth_max)
 print(b)
 t2 = time.time()
