@@ -107,12 +107,11 @@ while entree:
             alpha = -10**99
             beta = 10**99 
             depth = 0
-            depth_max = 4
+            depth_max = 2
             list_movements = ab.compute_best_direction(intermediary_state, alpha, beta, player, depth, depth_max)
-#            print(list_movements)
 #            list_movements = ab.direction_only_zero(intermediary_state, player)
             
-            time.sleep(0.5)
+            time.sleep(1)
     
             NUMBEROFMOVESTOPERFORM = len(list_movements)
             

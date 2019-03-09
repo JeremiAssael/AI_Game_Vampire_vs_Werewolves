@@ -8,7 +8,6 @@ Created on Wed Dec  5 17:55:03 2018
 import state as st
 import numpy as np
 import itertools
-#import heuristic_2 as hc
 import time
 
 def allowed_directions(x, y, w, h):

@@ -38,7 +38,7 @@ def max_value(state, alpha, beta, player, depth, depth_max, best_direction=None,
         if depth == depth_max:
             """we kept the directions in the states so that they are easy to 
             find, we have to remove them to compute the heuristic"""
-            return [state[0]*heuristic.compute_score_state(state[2],alpha_m, alpha_h, beta_m, beta_h, player, mode), state[1], state[2]]
+            return [state[0]*heuristic.compute_score_state(state[2], alpha_m, alpha_h, beta_m, beta_h, player, mode), state[1], state[2]]
 #            return [state[0]*random.randint(0, 100), state[1], state[2]]
         depth +=1
         v = -10**99
@@ -54,7 +54,7 @@ def max_value(state, alpha, beta, player, depth, depth_max, best_direction=None,
             if v >= beta:
                 return [v, best_direction, best_state]
             alpha = max(alpha, v)
-        print(best_direction)
+#        print(best_direction)
         return [v, best_direction, best_state]
     
     elif player == "werewolves":
@@ -103,7 +103,7 @@ def min_value(state, alpha, beta, player, depth, depth_max, best_direction=None,
                 v = max_list[0]
                 best_direction = considered_direction
                 best_state = considered_state
-            if v >= beta:
+            if alpha >= v:
                 return [v, best_direction, best_state]
             beta = min(beta, v)
 #        print(best_direction)
@@ -124,7 +124,7 @@ def min_value(state, alpha, beta, player, depth, depth_max, best_direction=None,
                 v = max_list[0]
                 best_direction = considered_direction
                 best_state = considered_state
-            if v >= beta:
+            if alpha >= v:
                 return [v, best_direction, best_state]
             beta = min(beta, v)
         return [v, best_direction, best_state]
@@ -155,6 +155,8 @@ def compute_best_direction(state, alpha, beta, player, depth, depth_max):
     final = from_direction_to_move(alph_bet, state, player)
     return final
  
+
+
 def direction_only_zero(state, player):
     alpha_m = 0.5
     alpha_h = 0.99
@@ -169,7 +171,7 @@ def direction_only_zero(state, player):
     for s in suc:
         list_proposition.append([s[0]*heuristic.compute_score_state(s[2],alpha_m, alpha_h, beta_m, beta_h, player, mode), s[1], s[2]])
     list_proposition = sorted(list_proposition, reverse=True, key=takeFirst)
-    print(list_proposition)
+#    print(list_proposition)
     return from_direction_to_move(list_proposition[0], state, player)
     
     
