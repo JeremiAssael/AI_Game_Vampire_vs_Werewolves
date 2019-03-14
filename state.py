@@ -18,6 +18,17 @@ def split_in_chunks(flat_state_list):
         state_in_chunk.append(list(flat_state_list[i:i+5]))
     return state_in_chunk
 
+def get_player(start_position, state):
+    list_vampires = state.get_vampires_list()
+    list_werewolves = state.get_werewolves_list()
+    for element in list_vampires:
+        if start_position[0] == element[0] and start_position[1] == element[1]:
+            return "vampires"
+    for element in list_werewolves:
+        if start_position[0] == element[0] and start_position[1] == element[1]:
+            return "werewolves"
+    
+
 
 
 class State():
@@ -61,11 +72,11 @@ class State():
             new_state = [ns for ns in new_state if ns not in new_state_to_delete]
             remaining_modifs = [modif for modif in modifications if modif not in modif_to_delete]
             new_state.extend(remaining_modifs)
-            ns = new_state.copy()
+            to_remove = []
             for i in range(len(new_state)):
                 if new_state[i][2] == 0 and new_state[i][3] == 0 and new_state[i][4] == 0:
-                    ns.pop(i)
-            new_state = ns
+                    to_remove.append(new_state)
+            new_state = [ns for ns in new_state if ns not in to_remove]      
             return State(new_state, self.width, self.height)
         else:
             return self
