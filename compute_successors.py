@@ -142,9 +142,10 @@ def compute_states_after_moves(state, moves, player):
                 if is_not_empty(s[j], moves_liste[i]):
                     origin = look_for_case(s, moves_liste[i][0], moves_liste[i][1])
                     s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3] - moves_liste[i][2], s[origin][4]]
-                    
-                    modif_with_proba.append(result(s[j], moves_liste[i][2], player))
-                    move_to_remove.append(moves_liste[i])
+                    if result(s[j], moves_liste[i][2], player) not in modif_with_proba:
+                        modif_with_proba.append(result(s[j], moves_liste[i][2], player))
+                    if moves_liste[i] not in move_to_remove:
+                        move_to_remove.append(moves_liste[i])
                     
         for k in range(len(s)):
             if s[k][2] == 0 and s[k][3] == 0 and s[k][4] == 0:
@@ -160,7 +161,10 @@ def compute_states_after_moves(state, moves, player):
         
         for i in range(len(moves_liste)):
             origin = look_for_case(s, moves_liste[i][0], moves_liste[i][1])
-            s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3] - moves_liste[i][2], s[origin][4]]
+            if s[origin][3] - moves_liste[i][2] <= 0:
+                s[origin] = [s[origin][0], s[origin][1], s[origin][2], 0, s[origin][4]]
+            else:
+                s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3] - moves_liste[i][2], s[origin][4]]
             modif_with_proba.append([1, [moves_liste[i][3], moves_liste[i][4], 0, moves_liste[i][2], 0]])
             
         for k in range(len(s)):
@@ -197,9 +201,10 @@ def compute_states_after_moves(state, moves, player):
                 if is_not_empty(s[j], moves_liste[i]):
                     origin = look_for_case(s, moves_liste[i][0], moves_liste[i][1])
                     s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], s[origin][4] - moves_liste[i][2]]
-                    
-                    modif_with_proba.append(result(s[j], moves_liste[i][2], player))
-                    move_to_remove.append(moves_liste[i])
+                    if result(s[j], moves_liste[i][2], player) not in modif_with_proba:
+                        modif_with_proba.append(result(s[j], moves_liste[i][2], player))
+                    if moves_liste[i] not in move_to_remove:
+                        move_to_remove.append(moves_liste[i])
                     
         for k in range(len(s)):
             if s[k][2] == 0 and s[k][3] == 0 and s[k][4] == 0:
@@ -215,7 +220,10 @@ def compute_states_after_moves(state, moves, player):
         
         for i in range(len(moves_liste)):
             origin = look_for_case(s, moves_liste[i][0], moves_liste[i][1])
-            s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], s[origin][4] - moves_liste[i][2]]
+            if  s[origin][4] - moves_liste[i][2] <= 0:
+                s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], 0]
+            else:
+                s[origin] = [s[origin][0], s[origin][1], s[origin][2], s[origin][3], s[origin][4] - moves_liste[i][2]]
             modif_with_proba.append([1, [moves_liste[i][3], moves_liste[i][4], 0, 0, moves_liste[i][2]]])
             
         for k in range(len(s)):
@@ -245,7 +253,8 @@ def from_modifs_to_states(state, modifs):
     """ from a list of modifs like this one [[[0.75, [4, 1, 0, 4, 0]], [0.25, [4, 1, 0, 0, 1]]], 
     [1, [7, 7, 0, 4, 0]], [1, [1, 5, 0, 2, 0]], [1, [4, 1, 0, 0, 4]], [1, [2, 3, 4, 0, 0]], 
     [1, [5, 8, 0, 4, 0]], [1, [1, 4, 0, 2, 0]]], build modifs"""
-    
+#    print(state)
+#    print("m", modifs)
     nb = 0
     common_final_state = []
     to_spread = []
@@ -269,10 +278,15 @@ def from_modifs_to_states(state, modifs):
         states_list = []   
         intermediary = []
         liste_possibilities = iterate_possibilities(len(to_spread))
+#        print(nb_states)
+#        print(len(to_spread))
         
-        if len(to_spread) !=0:
+        if len(to_spread) != 0:
             for i in range(nb_states):
                 for couple in list(zip([w for w in range(len(to_spread))], liste_possibilities[i])):
+#                    print(liste_possibilities)
+#                    print(couple)
+#                    print(to_spread)
                     intermediary.append(to_spread[couple[0]][couple[1]])
                 states_list.append(intermediary)
                 intermediary = []
@@ -344,7 +358,7 @@ def result(case, nb_player_moved, player):
             for i in range(len(issues)):
                 modif.append([issues[i][0], [case[0], case[1], 0, issues[i][2], issues[i][1]]])
         else:
-            modif.append([case[0], case[1], 0, 0, nb_player_moved])
+            modif.append([1, [case[0], case[1], 0, 0, nb_player_moved]])
         return modif
             
 

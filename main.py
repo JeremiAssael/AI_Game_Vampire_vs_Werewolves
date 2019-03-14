@@ -6,11 +6,16 @@ import struct
 import time
 import state as st
 import alpha_beta as ab
-
+import alpha_beta_2 as ab2
+import sys
 
 #HOST = "138.195.205.141"
-HOST = "localhost"
-PORT = "5555" 
+try:
+    HOST = sys.argv[1]
+    PORT = int(sys.argv[2])
+except:
+    HOST = "localhost"
+    PORT = "5555" 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("host")
@@ -31,8 +36,8 @@ sock.connect((HOST, int(PORT)))
 
 # NME
 sock.send("NME".encode("ascii"))
-sock.send(struct.pack("1B",  7))
-sock.send('Wetried'.encode("ascii"))
+sock.send(struct.pack("1B",  3))
+sock.send('LJM'.encode("ascii"))
 
 # SET
 header = sock.recv(3).decode("ascii")
@@ -66,16 +71,17 @@ else:
 
  
     
-
 initial_state = st.State(st.split_in_chunks(map_commands_raw), width, height)  
 #l'état reçu par map est le tout premier état du systeme.
 #Il est contenu dans map_commands_raw
 
+player = st.get_player(start_position, initial_state)
 intermediary_state = initial_state
 
 
-
+# get the good player (in start_position)
 entree = True
+
 
 while entree:
     reply = sock.recv(3)
@@ -91,7 +97,7 @@ while entree:
         if header != "UPD":
             print("Protocol Error at UPD")
         else:
-            
+            print("received UPD")
             number_upd_commands = receive_data(sock,1, "1B")[0]
             upd_commands_raw = receive_data(sock, number_upd_commands * 5, "{}B".format(number_upd_commands * 5))
         
@@ -103,18 +109,23 @@ while entree:
  
             # MOV        
             ########## HERE RESULTS MOVES WANT"""" 
-            player = "vampires"
             alpha = -10**99
             beta = 10**99 
             depth = 0
-            depth_max = 2
-            list_movements = ab.compute_best_direction(intermediary_state, alpha, beta, player, depth, depth_max)
-#            list_movements = ab.direction_only_zero(intermediary_state, player)
+            depth_max = 4
             
-            time.sleep(1)
+            if depth_max == 2:
+                list_movements = ab.compute_best_direction(intermediary_state, alpha, beta, player, depth, depth_max)
+            else:
+                list_movements = ab2.compute_best_direction(intermediary_state, alpha, beta, player, depth, depth_max)
+            
+
+    
+    #list_movements = ab.direction_only_zero(intermediary_state, player)
+            
     
             NUMBEROFMOVESTOPERFORM = len(list_movements)
-            
+            print(player)
             sock.send("MOV".encode("ascii"))
             sock.send(struct.pack("1B",  NUMBEROFMOVESTOPERFORM))
             for i in range(NUMBEROFMOVESTOPERFORM):

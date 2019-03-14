@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Wed Mar 13 08:34:09 2019
+
+@author: Lollo
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Fri Mar  8 00:57:47 2019
 
 @author: Lollo
@@ -196,7 +203,7 @@ def expected_gain_monster(E1,E2):
     return our_alive_monsters, their_alive_monsters
 
 # for the heuristics 
-def activation_function_humans(value,par = 4): # par is a function of to_hg (the higher to_hg the higher par)
+def activation_function_humans(value,par = 15): # par is a function of to_hg (the higher to_hg the higher par)
     return value**par
 
 def activation_function_monsters(value,par = 10): # par is a function of to_hg (the higher to_mg the higher par)
@@ -440,9 +447,9 @@ def compute_score_state_player(our_monsters_list, their_monsters_list, humans_li
             if distance_between_groups(x_us,y_us,x_them,y_them) == 0:
                 # here we are in very extreme cases
                 if battle:
-                    compute_battles_score_monsters =  + 20 * INF 
+                    compute_battles_score_monsters =  + 2 * INF 
                 else:
-                    compute_battles_score_monsters = - 20 * INF
+                    compute_battles_score_monsters = - 2 * INF
     # Nothing but a convex combination. Heuristic cannot be > 1
    
     val_heur =  lam_mh_direction * (compute_score(heuristic_humans,index_possible_directions)) + lam_mh_attack * compute_battles_score_humans + alpha_m_direction * (compute_score(heuristic_monsters,index_possible_directions)) + alpha_m_attack * compute_battles_score_monsters
@@ -459,12 +466,19 @@ def compute_score_state_player(our_monsters_list, their_monsters_list, humans_li
     
     return val_heur
               
-def compute_score_state(s, player, print_heuristic = False):
+              
+def compute_score_state(s_act, s_prec2, s_prec4, player, print_heuristic = False):
+    
+    # Grid parameter
+    width = s_act.width
+    height = s_act.height
+    
+    # ---------------------------------------- For the current state
     
     ## Get the list
-    humans_list = s.get_humans_list()
-    vampires_list = s.get_vampires_list()
-    werewolves_list = s.get_werewolves_list()
+    humans_list = s_act.get_humans_list()
+    vampires_list = s_act.get_vampires_list()
+    werewolves_list = s_act.get_werewolves_list()
     
     ## Numbers of groups for each species
     nb_groups_humans = len(humans_list)
@@ -472,12 +486,19 @@ def compute_score_state(s, player, print_heuristic = False):
     nb_groups_werewolves = len(werewolves_list)
     
     ## Absolute number of
-    nb_vampires = s.get_nb_vampires()
-    nb_werewolves = s.get_nb_werewolves()
+    nb_vampires = s_act.get_nb_vampires()
+    nb_werewolves = s_act.get_nb_werewolves()
     
-    # Grid parameter
-    width = s.width
-    height = s.height
+    # ---------------------------------------- For the previous state
+    ## Absolute number of
+    nb_vampires_prec2 = s_prec2.get_nb_vampires()
+    nb_werewolves_prec2 = s_prec2.get_nb_werewolves()
+    
+    # --------------------------------------- FOr the previous - previous state
+    
+    nb_vampires_prec4 = s_prec4.get_nb_vampires()
+    nb_werewolves_prec4 = s_prec4.get_nb_werewolves()
+    
     
     #constants
     INF = 10**4
@@ -501,11 +522,19 @@ def compute_score_state(s, player, print_heuristic = False):
         
         # How is important the results of a battle
         IMPORTANCE_BATTLES = 10
+        
+        # ratio number of vampires
+        if nb_vampires_prec2 > 0 and nb_vampires_prec4 > 0:
+            RATIO_BETWEEN_STATES_2 = nb_vampires/nb_vampires_prec2
+            RATIO_BETWEEN_STATES_4 = nb_vampires_prec2/nb_vampires_prec4
+        else:
+            RATIO_BETWEEN_STATES_2 = RATIO_BETWEEN_STATES_4 = 1
 
         heuristic_par_vampires = [IMPORTANCE_BATTLES * alpha_v_attack, alpha_v_direction, IMPORTANCE_BATTLES * lam_vh_attack, lam_vh_direction]
         heuristic_par_vampires_norm = [elem/np.sum(heuristic_par_vampires) for elem in heuristic_par_vampires]
-        
-        return compute_score_state_player(vampires_list, werewolves_list, humans_list, nb_groups_vampires, nb_groups_werewolves, nb_groups_humans, nb_vampires, width, height, MAX_DIST, MAX_NB_HUMANS, INF, to_gh = 2, to_gm = 1, alpha_m_attack = heuristic_par_vampires_norm[0], alpha_m_direction = heuristic_par_vampires_norm[1], lam_mh_attack = heuristic_par_vampires_norm[2] , lam_mh_direction = heuristic_par_vampires_norm[3], alpha_ins = alpha_insanity_vampires, print_heuristic = print_heuristic)
+        #print("R2:"+str(RATIO_BETWEEN_STATES_2))
+        #print("R4:"+str(RATIO_BETWEEN_STATES_4))
+        return (5 * RATIO_BETWEEN_STATES_4 + RATIO_BETWEEN_STATES_2) * compute_score_state_player(vampires_list, werewolves_list, humans_list, nb_groups_vampires, nb_groups_werewolves, nb_groups_humans, nb_vampires, width, height, MAX_DIST, MAX_NB_HUMANS, INF, to_gh = 2, to_gm = 2, alpha_m_attack = heuristic_par_vampires_norm[0], alpha_m_direction = heuristic_par_vampires_norm[1], lam_mh_attack = heuristic_par_vampires_norm[2] , lam_mh_direction = heuristic_par_vampires_norm[3], alpha_ins = alpha_insanity_vampires, print_heuristic = print_heuristic)
     
     elif(player == "werewolves"): 
         
@@ -513,7 +542,7 @@ def compute_score_state(s, player, print_heuristic = False):
         lam_wh_attack = 1
         lam_wh_direction = 1
         
-        alpha_w_attack = 0.5
+        alpha_w_attack = 1
         alpha_w_direction = 1 - lam_wh_direction
         
         alpha_insanity_werewolves = 1
@@ -524,7 +553,18 @@ def compute_score_state(s, player, print_heuristic = False):
         heuristic_par_werewolves = [IMPORTANCE_BATTLES * alpha_w_attack, alpha_w_direction, IMPORTANCE_BATTLES * lam_wh_attack, lam_wh_direction]
         heuristic_par_werevolves_norm = [elem/np.sum(heuristic_par_werewolves) for elem in heuristic_par_werewolves]
         
-        return compute_score_state_player(werewolves_list, vampires_list, humans_list, nb_groups_werewolves, nb_groups_vampires, nb_groups_humans, nb_werewolves, width, height, MAX_DIST, MAX_NB_HUMANS, INF, to_gh = 2, to_gm = 1, alpha_m_attack = heuristic_par_werevolves_norm[0], alpha_m_direction = heuristic_par_werevolves_norm[1], lam_mh_attack = heuristic_par_werevolves_norm[2] , lam_mh_direction = heuristic_par_werevolves_norm[3], alpha_ins = alpha_insanity_werewolves)
+        if nb_werewolves_prec2 > 0 and nb_werewolves_prec4 > 0:
+            
+            RATIO_BETWEEN_STATES_2 = nb_werewolves/nb_werewolves_prec2
+            RATIO_BETWEEN_STATES_4 = nb_werewolves_prec2/nb_werewolves_prec4
+        else:
+            RATIO_BETWEEN_STATES_2 = RATIO_BETWEEN_STATES_4 = 1
+
+            
+        #print("R2:"+str(RATIO_BETWEEN_STATES_2))
+        #print("R4:"+str(RATIO_BETWEEN_STATES_4))
+        
+        return ( 5 * RATIO_BETWEEN_STATES_4 + RATIO_BETWEEN_STATES_2) * compute_score_state_player(werewolves_list, vampires_list, humans_list, nb_groups_werewolves, nb_groups_vampires, nb_groups_humans, nb_werewolves, width, height, MAX_DIST, MAX_NB_HUMANS, INF, to_gh = 2, to_gm = 2, alpha_m_attack = heuristic_par_werevolves_norm[0], alpha_m_direction = heuristic_par_werevolves_norm[1], lam_mh_attack = heuristic_par_werevolves_norm[2] , lam_mh_direction = heuristic_par_werevolves_norm[3], alpha_ins = alpha_insanity_werewolves)
     
     
     # NOTE: lam_h and alpha may vary depending on the situation. We will do an estimation procedure. But before we have to make several simulations
